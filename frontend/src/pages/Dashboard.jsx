@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, Beaker, CheckCircle, AlertCircle } from 'lucide-react';
+import { Activity, Beaker, CheckCircle, AlertCircle, Search, PlusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import ScheduleModal from '../components/ScheduleModal';
 
 const STATUS_COLORS = {
     'Available': 'bg-emerald-100 text-emerald-800 border-emerald-200',
@@ -13,22 +14,30 @@ const STATUS_COLORS = {
 export default function Dashboard() {
     const [ots, setOts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
 
     useEffect(() => {
-        const fetchOTs = async () => {
-            try {
-                const res = await axios.get('http://localhost:5000/api/ots');
-                setOts(res.data);
-            } catch (err) {
-                console.error('Failed to fetch OTs', err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchOTs();
         const interval = setInterval(fetchOTs, 10000); // refresh every 10s
         return () => clearInterval(interval);
     }, []);
+
+    const fetchOTs = async () => {
+        try {
+            const res = await axios.get('http://localhost:5000/api/ots');
+            setOts(res.data);
+        } catch (err) {
+            console.error('Failed to fetch OTs', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const filteredOts = ots.filter(ot => 
+        ot.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        ot.status.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const stats = [
         { name: 'Available', value: ots.filter(ot => ot.status === 'Available').length, icon: CheckCircle, color: 'text-emerald-500' },
@@ -38,10 +47,32 @@ export default function Dashboard() {
     ];
 
     return (
-        <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-gray-900">Live Status Overview</h1>
-                <p className="text-gray-500 mt-1">Real-time monitoring of all 11 Operation Theatres</p>
+        <div className="space-y-8 relative">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Live Status Overview</h1>
+                    <p className="text-gray-500 mt-1">Real-time monitoring of all 11 Operation Theatres</p>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                    <div className="relative">
+                        <Search className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
+                        <input 
+                            type="text" 
+                            placeholder="Search theatres, status..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none w-64 shadow-sm"
+                        />
+                    </div>
+                    <button 
+                        onClick={() => setShowScheduleModal(true)}
+                        className="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-primary-500/30 transition-all flex items-center"
+                    >
+                        <PlusCircle className="w-5 h-5 mr-2" />
+                        Schedule Surgery
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -71,7 +102,7 @@ export default function Dashboard() {
                 {loading ? (
                     <div className="col-span-full py-20 flex justify-center text-gray-400">Loading OT Status...</div>
                 ) : (
-                    ots.map((ot, index) => (
+                    filteredOts.map((ot, index) => (
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -87,10 +118,6 @@ export default function Dashboard() {
                             </div>
 
                             <div className="mt-6 space-y-3">
-                                <p className="text-sm text-gray-500 flex justify-between">
-                                    <span>Equipments:</span>
-                                    <span className="font-medium text-gray-900">{ot.equipmentList.length} Items</span>
-                                </p>
                                 {ot.lastMaintained && (
                                     <p className="text-sm text-gray-500 flex justify-between">
                                         <span>Last Sterilized:</span>
@@ -103,7 +130,12 @@ export default function Dashboard() {
                         </motion.div>
                     ))
                 )}
+                {!loading && filteredOts.length === 0 && (
+                    <div className="col-span-full py-10 text-center text-gray-500">No Operation Theatres found matching your search.</div>
+                )}
             </div>
+
+            <ScheduleModal showModal={showScheduleModal} setShowModal={setShowScheduleModal} onSuccess={fetchOTs} />
         </div>
     );
 }

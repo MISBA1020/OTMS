@@ -8,6 +8,7 @@ dotenv.config();
 import otRoutes from './routes/otRoutes.js';
 import surgeryRoutes from './routes/surgeryRoutes.js';
 import sterilizationRoutes from './routes/sterilizationRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 app.use(cors());
@@ -20,6 +21,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/otms')
     .catch((err) => console.error('MongoDB connection error:', err));
 
 // Mount Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/ots', otRoutes);
 app.use('/api/surgeries', surgeryRoutes);
 app.use('/api/sterilization', sterilizationRoutes);
