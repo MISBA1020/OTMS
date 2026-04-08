@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { BriefcaseMedical, KeyRound, User as UserIcon } from 'lucide-react';
+import { BriefcaseMedical, KeyRound, User as UserIcon, Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Login() {
@@ -18,84 +18,86 @@ export default function Login() {
       await login(username, password, role);
       navigate('/');
     } catch (err) {
-      setError('Invalid credentials or role mismatch');
+      setError('Invalid credentials or role mismatch. Please contact support.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-100 via-white to-orange-50 flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Decorative Blur Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-400/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-orange-400/10 rounded-full blur-[100px] pointer-events-none"></div>
+
       <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white/80 glass shadow-2xl rounded-3xl p-8 border border-white/50"
+        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-[1000px] bg-white/70 backdrop-blur-2xl shadow-2xl shadow-indigo-900/10 rounded-[2.5rem] border border-white/80 flex flex-col md:flex-row overflow-hidden"
       >
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-primary-500/30 mb-4">
-            <BriefcaseMedical className="w-8 h-8 text-white" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">OTMS Portal</h2>
-          <p className="text-gray-500 mt-2">Sign in to manage Hospital Operations</p>
+        {/* Left Branding Panel */}
+        <div className="md:w-5/12 bg-gradient-to-br from-primary-700 to-indigo-900 p-12 text-white flex flex-col justify-between relative overflow-hidden">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.05] mix-blend-overlay"></div>
+            
+            <div className="relative z-10">
+                <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg shadow-black/10 border border-white/20 mb-8">
+                    <Activity className="w-8 h-8 text-orange-400" />
+                </div>
+                <h2 className="text-4xl font-black tracking-tight mb-4 leading-tight">Operation<br/>Theatre<br/><span className="text-orange-400">Management System</span></h2>
+            </div>
         </div>
 
-        {error && (
-            <div className="mb-4 bg-red-50 text-red-600 p-3 rounded-xl text-sm font-medium text-center border border-red-100">
-                {error}
+        {/* Right Auth Panel */}
+        <div className="md:w-7/12 p-12 md:p-16 flex flex-col justify-center bg-white/60">
+            <div className="mb-10">
+                <h3 className="text-2xl font-bold text-gray-900 tracking-tight">Secure Authentication</h3>
+                <p className="text-gray-500 mt-2 font-medium">Sign in to your authorized workspace.</p>
             </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Access Role</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full pl-4 pr-10 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all font-medium text-gray-700"
-            >
-              <option value="User">Doctor / Personnel (User)</option>
-              <option value="Admin">System Administrator</option>
-            </select>
-          </div>
+            {error && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 bg-red-50 text-red-600 p-4 rounded-2xl text-sm font-bold border border-red-100 flex items-center shadow-sm">
+                    {error}
+                </motion.div>
+            )}
 
-          <div>
-             <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-             <div className="relative">
-                <UserIcon className="w-5 h-5 absolute left-3 top-3.5 text-gray-400" />
-                <input
-                type="text"
-                required
-                placeholder="Enter your username"
-                className="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                />
-             </div>
-          </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Access Role</label>
+                <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full pl-4 pr-10 py-4 bg-white/80 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all font-bold text-gray-800 shadow-sm cursor-pointer"
+                >
+                <option value="User">Doctor / Medical Personnel</option>
+                <option value="Admin">System Administrator</option>
+                </select>
+            </div>
 
-          <div>
-             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-             <div className="relative">
-                <KeyRound className="w-5 h-5 absolute left-3 top-3.5 text-gray-400" />
-                <input
-                type="password"
-                required
-                placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                />
-             </div>
-          </div>
+            <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Identifier (UID)</label>
+                <div className="relative">
+                    <UserIcon className="w-5 h-5 absolute left-4 top-4 text-gray-400" />
+                    <input type="text" required placeholder="Enter your username"
+                    className="w-full pl-12 pr-4 py-4 bg-white/80 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all font-medium shadow-sm"
+                    value={username} onChange={(e) => setUsername(e.target.value)} />
+                </div>
+            </div>
 
-          <button
-            type="submit"
-            className="w-full py-3.5 mt-2 bg-gradient-to-r from-primary-600 to-indigo-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:scale-[1.02] transition-all"
-          >
-            Authenticate
-          </button>
-        </form>
-        
-        <div className="mt-6 text-center text-xs text-gray-400">
-           Protected by Hospital-Grade AES-256 Encryption
+            <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Security Key</label>
+                <div className="relative">
+                    <KeyRound className="w-5 h-5 absolute left-4 top-4 text-gray-400" />
+                    <input type="password" required placeholder="••••••••"
+                    className="w-full pl-12 pr-4 py-4 bg-white/80 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all font-medium shadow-sm"
+                    value={password} onChange={(e) => setPassword(e.target.value)} />
+                </div>
+            </div>
+
+            <button type="submit" className="w-full py-4 mt-4 bg-gradient-to-r from-primary-600 to-indigo-600 hover:to-indigo-700 text-white rounded-2xl font-bold text-lg shadow-xl shadow-primary-500/30 hover:-translate-y-1 transition-all">
+                Login
+            </button>
+            </form>
+            
+
         </div>
       </motion.div>
     </div>

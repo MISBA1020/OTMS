@@ -6,6 +6,7 @@ import Scheduling from './pages/Scheduling';
 import Sterilization from './pages/Sterilization';
 import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';
+import Reports from './pages/Reports';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/scheduling" element={<Scheduling />} />
               <Route path="/sterilization" element={<Sterilization />} />
+              <Route path="/reports" element={<Reports />} />
               <Route path="/admin" element={
                 <ProtectedRoute requireAdmin={true}>
                   <AdminPanel />

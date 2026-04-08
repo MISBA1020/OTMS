@@ -66,37 +66,39 @@ export default function AdminPanel() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1">
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <div className="flex items-center space-x-2 mb-6">
-                            <UserPlus className="text-primary-600 w-6 h-6" />
-                            <h2 className="text-xl font-bold">Register User</h2>
+                    <div className="glass-panel rounded-3xl p-8 sticky top-8">
+                        <div className="flex items-center space-x-3 mb-8">
+                            <div className="p-3 bg-secondary-50 text-secondary-500 rounded-xl">
+                                <UserPlus className="w-6 h-6" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900">Register User</h2>
                         </div>
                         
-                        <form onSubmit={handleCreateUser} className="space-y-4">
+                        <form onSubmit={handleCreateUser} className="space-y-5">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                <input required className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                                <label className="block text-sm font-bold text-gray-700 mb-1.5 mt-1">Full Name</label>
+                                <input required className="w-full bg-white/50 border border-gray-200 rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none"
                                     onChange={e => setFormData({ ...formData, name: e.target.value })} value={formData.name}/>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                                <input required className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                                <label className="block text-sm font-bold text-gray-700 mb-1.5">Username</label>
+                                <input required className="w-full bg-white/50 border border-gray-200 rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none"
                                     onChange={e => setFormData({ ...formData, username: e.target.value })} value={formData.username}/>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Temporary Password</label>
-                                <input required type="password" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                                <label className="block text-sm font-bold text-gray-700 mb-1.5">Temporary Password</label>
+                                <input required type="password" className="w-full bg-white/50 border border-gray-200 rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none"
                                     onChange={e => setFormData({ ...formData, password: e.target.value })} value={formData.password}/>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">System Role</label>
-                                <select required className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                                <label className="block text-sm font-bold text-gray-700 mb-1.5">System Role</label>
+                                <select required className="w-full bg-white/50 border border-gray-200 rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none cursor-pointer"
                                     onChange={e => setFormData({ ...formData, role: e.target.value })} value={formData.role}>
                                     <option value="User">Doctor / Personnel</option>
                                     <option value="Admin">System Administrator</option>
                                 </select>
                             </div>
-                            <button type="submit" className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 mt-4 rounded-xl font-bold shadow-lg shadow-primary-500/30 transition-all">
+                            <button type="submit" className="w-full bg-gradient-to-r from-primary-600 to-indigo-600 hover:to-indigo-700 text-white py-4 mt-6 rounded-2xl font-bold text-lg shadow-xl shadow-primary-500/30 hover:-translate-y-0.5 transition-all">
                                 Create Account
                             </button>
                         </form>
@@ -104,34 +106,34 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="lg:col-span-2">
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-100">
+                    <div className="overflow-x-auto pb-10">
+                        <table className="w-full text-sm text-left border-separate border-spacing-y-3">
+                            <thead className="text-gray-500 font-medium tracking-wide">
                                 <tr>
-                                    <th className="px-6 py-4">Name</th>
-                                    <th className="px-6 py-4">Username</th>
-                                    <th className="px-6 py-4">Role</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
+                                    <th className="px-6 pb-2 font-semibold text-base">Authorized Personnel</th>
+                                    <th className="px-6 pb-2 font-semibold text-base">Identifier (UID)</th>
+                                    <th className="px-6 pb-2 font-semibold text-base">Clearance Level</th>
+                                    <th className="px-6 pb-2 font-semibold text-base text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {loading && <tr><td colSpan="4" className="px-6 py-4 text-center">Loading...</td></tr>}
+                            <tbody className="text-base">
+                                {loading && <tr><td colSpan="4" className="px-6 py-16 text-center text-gray-400 font-bold glass-panel rounded-3xl">Loading Directory...</td></tr>}
                                 {!loading && users.map(u => (
-                                    <tr key={u._id} className="hover:bg-gray-50/50">
-                                        <td className="px-6 py-4 font-bold text-gray-900">{u.name}</td>
-                                        <td className="px-6 py-4 text-gray-600">{u.username}</td>
-                                        <td className="px-6 py-4">
+                                    <tr key={u._id} className="glass-panel hover:-translate-y-1 transition-all duration-300">
+                                        <td className="px-6 py-5 font-bold text-gray-900 rounded-l-3xl">{u.name}</td>
+                                        <td className="px-6 py-5 text-gray-500 font-medium">{u.username}</td>
+                                        <td className="px-6 py-5">
                                             {u.role === 'Admin' ? 
-                                                <span className="flex items-center text-xs font-bold text-purple-700 bg-purple-100 px-2.5 py-1 rounded-full w-max"><Shield className="w-3 h-3 mr-1"/> Admin</span> : 
-                                                <span className="flex items-center text-xs font-bold text-blue-700 bg-blue-100 px-2.5 py-1 rounded-full w-max"><User className="w-3 h-3 mr-1"/> User</span>
+                                                <span className="flex items-center text-xs font-bold text-purple-700 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-full w-max shadow-sm"><Shield className="w-3.5 h-3.5 mr-1.5"/> System Admin</span> : 
+                                                <span className="flex items-center text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full w-max shadow-sm"><User className="w-3.5 h-3.5 mr-1.5"/> Med Personnel</span>
                                             }
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-5 text-right rounded-r-3xl">
                                             <button 
                                                 onClick={() => handleDeleteUser(u._id, u.role)}
                                                 disabled={u.role === 'Admin'}
                                                 title={u.role === 'Admin' ? "Cannot delete System Admin" : "Delete user"}
-                                                className={`p-2 rounded-lg transition-colors ${u.role === 'Admin' ? 'text-gray-300 cursor-not-allowed bg-gray-50' : 'text-rose-500 hover:bg-rose-50 hover:text-rose-700'}`}
+                                                className={`p-2.5 rounded-xl transition-all shadow-sm border ${u.role === 'Admin' ? 'text-gray-300 border-gray-100 cursor-not-allowed bg-gray-50' : 'text-rose-500 bg-white border-rose-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 hover:-translate-y-0.5 hover:shadow-md'}`}
                                             >
                                                 <Trash2 className="w-5 h-5" />
                                             </button>

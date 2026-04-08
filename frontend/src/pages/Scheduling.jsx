@@ -35,51 +35,51 @@ export default function Scheduling() {
                 <p className="text-gray-500 mt-1">Manage and track daily surgical operations</p>
             </div>
 
-            <div className="bg-white border text-left border-gray-100 shadow-sm rounded-2xl overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead className="bg-gray-50 text-gray-500 font-medium">
+            <div className="overflow-x-auto pb-10">
+                <table className="w-full text-left border-separate border-spacing-y-3">
+                    <thead className="text-gray-500 font-medium text-sm tracking-wide">
                         <tr>
-                            <th className="px-6 py-4">Patient / Surgeon</th>
-                            <th className="px-6 py-4">Theatre</th>
-                            <th className="px-6 py-4">Type</th>
-                            <th className="px-6 py-4">Timing</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4">Actions</th>
+                            <th className="px-6 pb-2 font-semibold">Patient / Surgeon</th>
+                            <th className="px-6 pb-2 font-semibold">Theatre</th>
+                            <th className="px-6 pb-2 font-semibold">Type</th>
+                            <th className="px-6 pb-2 font-semibold">Timing</th>
+                            <th className="px-6 pb-2 font-semibold">Status</th>
+                            <th className="px-6 pb-2 font-semibold">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="text-sm">
                         {surgeries.map(surgery => (
-                            <tr key={surgery._id} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="px-6 py-4">
-                                    <p className="font-bold text-gray-900">{surgery.patientName}</p>
-                                    <p className="text-gray-500 text-xs flex items-center mt-1"><User className="w-3 h-3 mr-1" />{surgery.surgeonName}</p>
+                            <tr key={surgery._id} className="glass-panel hover:-translate-y-1 transition-all duration-300">
+                                <td className="px-6 py-5 rounded-l-3xl">
+                                    <p className="font-bold text-gray-900 text-base">{surgery.patientName}</p>
+                                    <p className="text-primary-600 font-semibold text-xs flex items-center mt-1"><User className="w-3.5 h-3.5 mr-1" />{surgery.surgeonName}</p>
                                 </td>
-                                <td className="px-6 py-4 font-medium">{surgery.operationTheatreId?.name || 'Unknown'}</td>
-                                <td className="px-6 py-4 text-gray-600">{surgery.surgeryType}</td>
-                                <td className="px-6 py-4 text-gray-600">
-                                    <div className="flex items-center"><CalendarIcon className="w-4 h-4 mr-2 text-gray-400" /> {format(new Date(surgery.startTime), 'MMM dd, yyyy')}</div>
-                                    <div className="flex items-center mt-1 text-xs"><Clock className="w-3 h-3 mr-2 text-gray-400" /> {format(new Date(surgery.startTime), 'HH:mm')} - {format(new Date(surgery.endTime), 'HH:mm')}</div>
+                                <td className="px-6 py-5 font-bold text-gray-700">{surgery.operationTheatreId?.name || 'Unknown'}</td>
+                                <td className="px-6 py-5 font-medium text-gray-500">{surgery.surgeryType}</td>
+                                <td className="px-6 py-5">
+                                    <div className="flex items-center text-gray-800 font-semibold"><CalendarIcon className="w-4 h-4 mr-2 text-primary-500" /> {format(new Date(surgery.startTime), 'MMM dd, yyyy')}</div>
+                                    <div className="flex items-center mt-1 text-xs text-gray-500 font-medium"><Clock className="w-3.5 h-3.5 mr-2" /> {format(new Date(surgery.startTime), 'HH:mm')} - {format(new Date(surgery.endTime), 'HH:mm')}</div>
                                 </td>
-                                <td className="px-6 py-4">
-                                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${surgery.status === 'Scheduled' ? 'bg-blue-100 text-blue-700' :
-                                            surgery.status === 'In Progress' ? 'bg-amber-100 text-amber-700' :
-                                                surgery.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700'
+                                <td className="px-6 py-5">
+                                    <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border shadow-sm ${surgery.status === 'Scheduled' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                            surgery.status === 'In Progress' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                                surgery.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-50 text-gray-700 border-gray-200'
                                         }`}>
                                         {surgery.status}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4">
+                                <td className="px-6 py-5 rounded-r-3xl">
                                     {surgery.status === 'Scheduled' && (
-                                        <button onClick={() => handleStatusChange(surgery._id, 'In Progress')} className="text-blue-600 hover:text-blue-800 text-xs font-bold mr-3">Start</button>
+                                        <button onClick={() => handleStatusChange(surgery._id, 'In Progress')} className="bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-xl text-xs font-bold mr-3 shadow-sm transition-colors">Start OP</button>
                                     )}
                                     {surgery.status === 'In Progress' && (
-                                        <button onClick={() => handleStatusChange(surgery._id, 'Completed')} className="text-emerald-600 hover:text-emerald-800 text-xs font-bold mr-3">Complete</button>
+                                        <button onClick={() => handleStatusChange(surgery._id, 'Completed')} className="bg-emerald-500 text-white hover:bg-emerald-600 px-4 py-2 rounded-xl text-xs font-bold mr-3 shadow-md shadow-emerald-500/20 transition-all">Complete</button>
                                     )}
                                 </td>
                             </tr>
                         ))}
                         {surgeries.length === 0 && (
-                            <tr><td colSpan="6" className="px-6 py-12 text-center text-gray-500">No surgeries scheduled yet.</td></tr>
+                            <tr><td colSpan="6" className="px-6 py-16 text-center text-gray-500 font-medium glass-panel rounded-3xl">No surgeries scheduled yet.</td></tr>
                         )}
                     </tbody>
                 </table>

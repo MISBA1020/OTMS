@@ -9,6 +9,7 @@ import otRoutes from './routes/otRoutes.js';
 import surgeryRoutes from './routes/surgeryRoutes.js';
 import sterilizationRoutes from './routes/sterilizationRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import staffRoutes from './routes/staffRoutes.js';
 
 const app = express();
 app.use(cors());
@@ -25,6 +26,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/ots', otRoutes);
 app.use('/api/surgeries', surgeryRoutes);
 app.use('/api/sterilization', sterilizationRoutes);
+app.use('/api/staff', staffRoutes);
 
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'OTMS API is running' });
