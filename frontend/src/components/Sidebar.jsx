@@ -46,11 +46,9 @@ export default function Sidebar() {
             className="w-64 bg-white/50 backdrop-blur-2xl border-r border-white/60 flex flex-col h-screen fixed shadow-[4px_0_24px_rgba(30,58,138,0.05)] z-20"
         >
             <div className="p-6 flex items-center space-x-3 mt-2">
-                <div className="w-11 h-11 bg-gradient-to-br from-primary-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl shadow-primary-500/40 border border-white/20">
-                    OT
-                </div>
+                <img src="pes logo.webp" alt="" className='w-15'/>
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 tracking-tight">
-                    Manager
+                    PESU Hospitals
                 </span>
             </div>
 
