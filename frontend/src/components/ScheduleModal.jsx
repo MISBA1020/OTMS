@@ -91,7 +91,11 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+        if (name === 'aadharNo') {
+            value = value.replace(/\D/g, '');
+            if (value.length > 12) value = value.slice(0, 12);
+        }
         if (['surgeonName', 'anesthesiologist', 'scrubNurse', 'otTechnician'].includes(name) && value === 'ADD_NEW') {
             const titles = {
                 surgeonName: 'Add Surgeon',
@@ -160,7 +164,7 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                 </div>
                                 <div>
                                     <label className="block text-sm text-gray-600 font-bold mb-1">Aadhar Number</label>
-                                    <input type="number" required name="aadharNo" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.aadharNo}/>
+                                    <input type="text" pattern="\d{12}" minLength="12" maxLength="12" title="Please enter exactly 12 digits" required name="aadharNo" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.aadharNo}/>
                                 </div>
                                 <div>
                                     <label className="block text-sm text-gray-600 font-bold mb-1">I.P Number</label>
