@@ -1,5 +1,6 @@
 import express from 'express';
 import OperationTheatre from '../models/OperationTheatre.js';
+import Surgery from '../models/Surgery.js';
 
 const router = express.Router();
 
@@ -8,6 +9,36 @@ router.get('/', async (req, res) => {
     try {
         const ots = await OperationTheatre.find();
         res.json(ots);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Get available OTs for a time slot
+router.get('/available', async (req, res) => {
+    try {
+        const { startTime, endTime } = req.query;
+        if (!startTime || !endTime) {
+            const ots = await OperationTheatre.find();
+            return res.json(ots);
+        }
+
+        const overlappingSurgeries = await Surgery.find({
+            $or: [
+                { startTime: { $lt: endTime, $gte: startTime } },
+                { endTime: { $gt: startTime, $lte: endTime } },
+                { startTime: { $lte: startTime }, endTime: { $gte: endTime } }
+            ],
+            status: { $in: ['Scheduled', 'In Progress'] }
+        });
+
+        const busyOTIds = overlappingSurgeries.map(s => s.operationTheatreId);
+
+        const availableOTs = await OperationTheatre.find({
+            _id: { $nin: busyOTIds }
+        });
+
+        res.json(availableOTs);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

@@ -1,0 +1,220 @@
+[{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59dfe"
+  },
+  "name": "Operation Theatre 1 - ENT",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.630Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T11:55:56.879Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59dff"
+  },
+  "name": "Operation Theatre 2 - OBG",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.631Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T07:30:00.631Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59e00"
+  },
+  "name": "Operation Theatre 3 - Ortho",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.631Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T07:30:00.631Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59e01"
+  },
+  "name": "Operation Theatre 4 - Surgery",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.631Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T11:55:58.037Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59e02"
+  },
+  "name": "Operation Theatre 5 - Surgery",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59e03"
+  },
+  "name": "Operation Theatre 6 - Ortho",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59e04"
+  },
+  "name": "Operation Theatre 7 - Ophthal",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59e05"
+  },
+  "name": "Operation Theatre 8 - Ophthal",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T11:55:55.698Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59e06"
+  },
+  "name": "Operation Theatre 9 - Labour",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-15T04:49:46.991Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59e07"
+  },
+  "name": "Operation Theatre 10 - Emergency",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-08T04:34:45.444Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59e08"
+  },
+  "name": "Operation Theatre 11 - Septic",
+  "status": "Available",
+  "equipmentList": [
+    "Anesthesia Machine",
+    "Surgical Lights",
+    "Operating Table",
+    "Defibrillator"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T07:30:00.632Z"
+  }
+}]

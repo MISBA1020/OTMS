@@ -1,0 +1,80 @@
+[{
+  "_id": {
+    "$oid": "69d4b2781ec81998f9b59dfa"
+  },
+  "username": "admin",
+  "password": "$2b$10$RKwm.PRQdk/bvgSy1X9GxueL30y.vV0bmSOkkgEP6K7taaPTDhcOu",
+  "role": "Admin",
+  "name": "System Admin",
+  "__v": 0,
+  "createdAt": {
+    "$date": "2026-04-07T07:30:00.604Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T07:30:00.604Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "69d4c6bcfc69ff0448de3482"
+  },
+  "username": "misba",
+  "password": "$2b$10$GQOd39KrL1EC691UB5bCJOoA8mXCxnH6LjIyAKi5PgBtoRFdFTRVC",
+  "role": "User",
+  "name": "misba",
+  "createdAt": {
+    "$date": "2026-04-07T08:56:28.848Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T08:56:28.848Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69d4d7f181aaca73a51c22eb"
+  },
+  "username": "ajay",
+  "password": "$2b$10$K4Z0feGaUJQWJzQtNNmarOdIQN3JGMf6cJLhjXH4bCbs5uuvgBdbO",
+  "role": "User",
+  "name": "ajay",
+  "createdAt": {
+    "$date": "2026-04-07T10:09:53.482Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T10:09:53.482Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69d4e6b3c78ac1911b4d1159"
+  },
+  "username": "rakshitha",
+  "password": "$2b$10$klVJJRlXdXCtYm2SY.mbAex6bJS9BpIOFC6b6xLo4i8eVqWqsbpii",
+  "role": "User",
+  "name": "rakshitha",
+  "createdAt": {
+    "$date": "2026-04-07T11:12:51.495Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-07T11:12:51.495Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "69e079d2a040628748cd5221"
+  },
+  "username": "Wizard",
+  "password": "$2b$10$K1B/cXWWi2GtHK08tbYz6ea71JD8JhVoueF0jTLldH0H.y3wK00LO",
+  "role": "User",
+  "name": "Darshan ",
+  "createdAt": {
+    "$date": "2026-04-16T05:55:30.489Z"
+  },
+  "updatedAt": {
+    "$date": "2026-04-16T05:55:30.489Z"
+  },
+  "__v": 0
+}]

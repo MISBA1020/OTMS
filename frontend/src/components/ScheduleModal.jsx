@@ -43,15 +43,25 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
 
     useEffect(() => {
         if (showModal) {
-            axios.get('http://localhost:5000/api/ots')
-                 .then(res => setOts(res.data))
-                 .catch(err => console.error(err));
-            
             axios.get('http://localhost:5000/api/staff')
                  .then(res => setLists(res.data))
                  .catch(err => console.error(err));
         }
     }, [showModal]);
+
+    useEffect(() => {
+        if (showModal && formData.startTime && formData.endTime) {
+            if (new Date(formData.startTime) >= new Date(formData.endTime)) {
+                setOts([]);
+                return;
+            }
+            axios.get(`http://localhost:5000/api/ots/available?startTime=${formData.startTime}&endTime=${formData.endTime}`)
+                 .then(res => setOts(res.data))
+                 .catch(err => console.error(err));
+        } else {
+            setOts([]);
+        }
+    }, [showModal, formData.startTime, formData.endTime]);
 
     if (!showModal) return null;
 
@@ -173,46 +183,7 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                             </div>
                         </div>
 
-                        {/* Section 2: Clinical Details */}
-                        <div>
-                            <h3 className="text-lg font-bold text-gray-800 flex items-center mb-4 pt-4 border-t border-gray-100"><Activity className="w-5 h-5 mr-2 text-rose-500" /> Clinical & Operation Details</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                                <div>
-                                    <label className="block text-sm text-gray-600 font-bold mb-1">Diagnosis</label>
-                                    <textarea required name="diagnosis" rows="2" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.diagnosis}></textarea>
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-600 font-bold mb-1">Surgery Request</label>
-                                    <textarea required name="surgery" rows="2" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.surgery}></textarea>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                                <div>
-                                    <label className="block text-sm text-gray-600 font-bold mb-1">Operation Theatre</label>
-                                    <select required name="operationTheatreId" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none bg-blue-50/50" onChange={handleChange} value={formData.operationTheatreId}>
-                                        <option value="">-- Assign Theatre --</option>
-                                        {ots.map(ot => <option key={ot._id} value={ot._id}>{ot.name}</option>)}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-600 font-bold mb-1">Surgery Category</label>
-                                    <select required name="surgeryCategory" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.surgeryCategory}>
-                                        <option value="Major">Major</option>
-                                        <option value="Minor">Minor</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm text-gray-600 font-bold mb-1">Priority Selection</label>
-                                    <select required name="priority" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.priority}>
-                                        <option value="Planned">Planned</option>
-                                        <option value="Unplanned">Unplanned</option>
-                                        <option value="Emergency">Emergency</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Section 3: Staff & Timing */}
+                        {/* Section 2: Operational & Staff Commitments */}
                         <div>
                             <h3 className="text-lg font-bold text-gray-800 flex items-center mb-4 pt-4 border-t border-gray-100"><ShieldAlert className="w-5 h-5 mr-2 text-emerald-500" /> Operational & Staff Commitments</h3>
                             
@@ -265,6 +236,45 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                 <div>
                                     <label className="block text-sm text-gray-600 font-bold mb-1">End Time</label>
                                     <input required type="datetime-local" name="endTime" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.endTime} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Section 3: Clinical Details */}
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-800 flex items-center mb-4 pt-4 border-t border-gray-100"><Activity className="w-5 h-5 mr-2 text-rose-500" /> Clinical & Operation Details</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                                <div>
+                                    <label className="block text-sm text-gray-600 font-bold mb-1">Diagnosis</label>
+                                    <textarea required name="diagnosis" rows="2" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.diagnosis}></textarea>
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-600 font-bold mb-1">Surgery Request</label>
+                                    <textarea required name="surgery" rows="2" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.surgery}></textarea>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div>
+                                    <label className="block text-sm text-gray-600 font-bold mb-1">Operation Theatre</label>
+                                    <select required name="operationTheatreId" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none bg-blue-50/50" onChange={handleChange} value={formData.operationTheatreId}>
+                                        <option value="">{(!formData.startTime || !formData.endTime) ? '-- Select Time --' : '-- Assign Theatre --'}</option>
+                                        {ots.map(ot => <option key={ot._id} value={ot._id}>{ot.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-600 font-bold mb-1">Surgery Category</label>
+                                    <select required name="surgeryCategory" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.surgeryCategory}>
+                                        <option value="Major">Major</option>
+                                        <option value="Minor">Minor</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-600 font-bold mb-1">Priority Selection</label>
+                                    <select required name="priority" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.priority}>
+                                        <option value="Planned">Planned</option>
+                                        <option value="Unplanned">Unplanned</option>
+                                        <option value="Emergency">Emergency</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
