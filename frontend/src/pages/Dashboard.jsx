@@ -121,47 +121,51 @@ export default function Dashboard() {
                 {loading ? (
                     <div className="col-span-full py-20 flex justify-center text-gray-400">Loading OT Status...</div>
                 ) : (
-                    filteredOts.map((ot, index) => (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.05 }}
-                            key={ot._id}
-                            className={`glass-panel rounded-3xl p-6 flex flex-col justify-between hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary-900/10 transition-all group relative overflow-hidden ${
-                                (ot.status === 'In Use' || activeSurgeries.some(s => (s.operationTheatreId?._id || s.operationTheatreId) === ot._id && s.status !== 'Completed' && s.status !== 'Cancelled')) 
-                                ? 'cursor-pointer ring-2 ring-transparent hover:ring-blue-200' 
-                                : 'cursor-default'
-                            }`}
-                            onClick={() => {
-                                const otSurgeries = activeSurgeries.filter(s => 
-                                    (s.operationTheatreId?._id || s.operationTheatreId) === ot._id &&
-                                    s.status !== 'Completed' && s.status !== 'Cancelled'
-                                );
-                                const now = new Date();
-                                const active = otSurgeries.find(s => s.status === 'In Progress' || (new Date(s.startTime) <= now && new Date(s.endTime) > now)) || otSurgeries[0];
-                                
-                                if (active) setSelectedActiveSurgery(active);
-                            }}
-                        >
-                            <div className="flex justify-between items-start">
-                                <h3 className="text-lg font-bold text-gray-900">{ot.name}</h3>
-                                <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${STATUS_COLORS[ot.status] || 'bg-gray-100 text-gray-800'}`}>
-                                    {ot.status}
-                                </span>
-                            </div>
+                    filteredOts.map((ot, index) => {
+                        const otSurgeries = activeSurgeries.filter(s => 
+                            (s.operationTheatreId?._id || s.operationTheatreId) === ot._id &&
+                            s.status !== 'Completed' && s.status !== 'Cancelled'
+                        );
+                        const now = new Date();
+                        const active = otSurgeries.find(s => s.status === 'In Progress' || (new Date(s.startTime) <= now && new Date(s.endTime) > now)) || otSurgeries[0];
 
-                            <div className="mt-6 space-y-3">
-                                {ot.lastMaintained && (
-                                    <p className="text-sm text-gray-500 flex justify-between">
-                                        <span>Last Sterilized:</span>
-                                        <span className="font-medium text-gray-900">
-                                            {new Date(ot.lastMaintained).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                    </p>
+                        return (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.05 }}
+                                key={ot._id}
+                                className="glass-panel rounded-3xl p-6 flex flex-col justify-between hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary-900/10 transition-all cursor-default"
+                            >
+                                <div className="flex justify-between items-start">
+                                    <h3 className="text-lg font-bold text-gray-900">{ot.name}</h3>
+                                    <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${STATUS_COLORS[ot.status] || 'bg-gray-100 text-gray-800'}`}>
+                                        {ot.status}
+                                    </span>
+                                </div>
+
+                                <div className="mt-6 space-y-3">
+                                    {ot.lastMaintained && (
+                                        <p className="text-sm text-gray-500 flex justify-between">
+                                            <span>Last Sterilized:</span>
+                                            <span className="font-medium text-gray-900">
+                                                {new Date(ot.lastMaintained).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </p>
+                                    )}
+                                </div>
+
+                                {active && (
+                                    <button 
+                                        onClick={() => setSelectedActiveSurgery(active)} 
+                                        className="mt-6 w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-2.5 rounded-xl transition-colors border border-blue-200 shadow-sm flex justify-center items-center"
+                                    >
+                                        View Details
+                                    </button>
                                 )}
-                            </div>
-                        </motion.div>
-                    ))
+                            </motion.div>
+                        );
+                    })
                 )}
                 {!loading && filteredOts.length === 0 && (
                     <div className="col-span-full py-10 text-center text-gray-500">No Operation Theatres found matching your search.</div>
