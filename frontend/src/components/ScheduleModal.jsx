@@ -91,7 +91,11 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+        if (name === 'aadharNo') {
+            value = value.replace(/\D/g, '');
+            if (value.length > 12) value = value.slice(0, 12);
+        }
         if (['surgeonName', 'anesthesiologist', 'scrubNurse', 'otTechnician'].includes(name) && value === 'ADD_NEW') {
             const titles = {
                 surgeonName: 'Add Surgeon',
@@ -160,7 +164,7 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                 </div>
                                 <div>
                                     <label className="block text-sm text-gray-600 font-bold mb-1">Aadhar Number</label>
-                                    <input type="number" required name="aadharNo" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.aadharNo}/>
+                                    <input type="text" pattern="\d{12}" minLength="12" maxLength="12" title="Please enter exactly 12 digits" required name="aadharNo" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.aadharNo}/>
                                 </div>
                                 <div>
                                     <label className="block text-sm text-gray-600 font-bold mb-1">I.P Number</label>
@@ -193,7 +197,6 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                     <select required name="surgeonName" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.surgeonName}>
                                         <option value="">- Select -</option>
                                         {lists.surgeonName.map(s => <option key={s} value={s}>{s}</option>)}
-                                        {user?.role === 'Admin' && <option value="ADD_NEW">➕ Add New</option>}
                                     </select>
                                 </div>
                                 <div>
@@ -201,7 +204,6 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                     <select required name="anesthesiologist" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.anesthesiologist}>
                                         <option value="">- Select -</option>
                                         {lists.anesthesiologist.map(s => <option key={s} value={s}>{s}</option>)}
-                                        {user?.role === 'Admin' && <option value="ADD_NEW">➕ Add New</option>}
                                     </select>
                                 </div>
                                 <div>
@@ -209,7 +211,6 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                     <select required name="scrubNurse" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.scrubNurse}>
                                         <option value="">- Select -</option>
                                         {lists.scrubNurse.map(s => <option key={s} value={s}>{s}</option>)}
-                                        {user?.role === 'Admin' && <option value="ADD_NEW">➕ Add New</option>}
                                     </select>
                                 </div>
                                 <div>
@@ -217,7 +218,6 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                     <select required name="otTechnician" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.otTechnician}>
                                         <option value="">- Select -</option>
                                         {lists.otTechnician.map(s => <option key={s} value={s}>{s}</option>)}
-                                        {user?.role === 'Admin' && <option value="ADD_NEW">➕ Add New</option>}
                                     </select>
                                 </div>
                             </div>
