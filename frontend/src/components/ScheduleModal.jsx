@@ -197,7 +197,6 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                     <select required name="surgeonName" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.surgeonName}>
                                         <option value="">- Select -</option>
                                         {lists.surgeonName.map(s => <option key={s} value={s}>{s}</option>)}
-                                        {user?.role === 'Admin' && <option value="ADD_NEW">➕ Add New</option>}
                                     </select>
                                 </div>
                                 <div>
@@ -205,7 +204,6 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                     <select required name="anesthesiologist" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.anesthesiologist}>
                                         <option value="">- Select -</option>
                                         {lists.anesthesiologist.map(s => <option key={s} value={s}>{s}</option>)}
-                                        {user?.role === 'Admin' && <option value="ADD_NEW">➕ Add New</option>}
                                     </select>
                                 </div>
                                 <div>
@@ -213,7 +211,6 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                     <select required name="scrubNurse" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.scrubNurse}>
                                         <option value="">- Select -</option>
                                         {lists.scrubNurse.map(s => <option key={s} value={s}>{s}</option>)}
-                                        {user?.role === 'Admin' && <option value="ADD_NEW">➕ Add New</option>}
                                     </select>
                                 </div>
                                 <div>
@@ -221,7 +218,6 @@ export default function ScheduleModal({ showModal, setShowModal, onSuccess }) {
                                     <select required name="otTechnician" className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none" onChange={handleChange} value={formData.otTechnician}>
                                         <option value="">- Select -</option>
                                         {lists.otTechnician.map(s => <option key={s} value={s}>{s}</option>)}
-                                        {user?.role === 'Admin' && <option value="ADD_NEW">➕ Add New</option>}
                                     </select>
                                 </div>
                             </div>
