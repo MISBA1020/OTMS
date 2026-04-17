@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, Settings, User as UserIcon, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "../context/AuthContext";
+import ProfileModal from "./ProfileModal";
 
 export default function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [showPopover, setShowPopover] = useState(false);
   const popoverRef = useRef(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [modalTab, setModalTab] = useState('profile');
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -59,14 +62,22 @@ export default function Navbar() {
               >
                 <div className="p-2 space-y-1">
                   <button
-                    onClick={() => alert("Profile feature coming soon!")}
+                    onClick={() => {
+                        setModalTab('profile');
+                        setShowProfileModal(true);
+                        setShowPopover(false);
+                    }}
                     className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 transition-colors text-sm font-medium"
                   >
                     <UserIcon className="w-4 h-4 text-gray-500" />
                     <span>My Profile</span>
                   </button>
                   <button
-                    onClick={() => alert("Password flow coming soon!")}
+                    onClick={() => {
+                        setModalTab('password');
+                        setShowProfileModal(true);
+                        setShowPopover(false);
+                    }}
                     className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 transition-colors text-sm font-medium"
                   >
                     <Settings className="w-4 h-4 text-gray-500" />
@@ -117,6 +128,16 @@ export default function Navbar() {
           </button>
         </div>
       </div>
+
+      {/* Render Profile/Password Modal */}
+      <AnimatePresence>
+        {showProfileModal && (
+          <ProfileModal 
+            onClose={() => setShowProfileModal(false)} 
+            initialTab={modalTab} 
+          />
+        )}
+      </AnimatePresence>
     </motion.nav>
   );
 }
