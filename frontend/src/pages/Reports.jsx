@@ -88,60 +88,211 @@ export default function Reports() {
         doc.save("OTMS_Master_Report.pdf");
     };
 
-    const downloadPatientRecord = (surgery) => {
-        const doc = new jsPDF();
-        
-        doc.setFontSize(22);
-        doc.setTextColor(37, 99, 235);
-        doc.text("Operation Theatre Management System", 105, 20, null, null, "center");
-        
+    const downloadPatientRecord = async (surgery) => {
+        // Safely load the hospital logo from public folder as base64
+        let logoBase64 = null;
+        let logoFormat = 'WEBP';
+        try {
+            const response = await fetch('/pes logo.webp');
+            if (response.ok) {
+                const blob = await response.blob();
+                logoBase64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            }
+        } catch (e) {
+            console.warn('Logo not loaded, using fallback.', e);
+        }
+
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const pageW = 210;
+        const margin = 15;
+        const colMid = 105;
+        let y = 14;
+
+
+        // ── Helpers ─────────────────────────────────────────────────────────
+        const sectionHeader = (title) => {
+            doc.setFillColor(220, 225, 235);
+            doc.rect(margin, y, pageW - margin * 2, 7, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9.5);
+            doc.setTextColor(30, 30, 30);
+            doc.text(title, margin + 2, y + 5);
+            y += 10;
+        };
+
+        const row2col = (l1, v1, l2, v2) => {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(60, 60, 60);
+            doc.text(l1, margin + 2, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(v1 || '—', margin + 32, y);
+            if (l2) {
+                doc.setFont('helvetica', 'normal');
+                doc.text(l2, colMid, y);
+                doc.setFont('helvetica', 'bold');
+                doc.text(v2 || '—', colMid + 28, y);
+            }
+            y += 7;
+        };
+
+        const row1col = (label, value) => {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(60, 60, 60);
+            doc.text(label, margin + 2, y);
+            doc.setFont('helvetica', 'bold');
+            doc.text(value || '—', margin + 32, y);
+            y += 7;
+        };
+
+        const divider = () => {
+            doc.setDrawColor(210, 210, 210);
+            doc.setLineWidth(0.2);
+            doc.line(margin, y - 2, pageW - margin, y - 2);
+        };
+
+        // ── Header ───────────────────────────────────────────────────────────
+        if (logoBase64) {
+            doc.addImage(logoBase64, 'WEBP', margin, y, 18, 18);
+        } else {
+            // Fallback: drawn compass circle
+            doc.setDrawColor(30, 50, 110);
+            doc.setLineWidth(1);
+            doc.circle(margin + 9, y + 9, 8);
+            doc.setFillColor(230, 130, 30);
+            doc.circle(margin + 9, y + 9, 6, 'F');
+        }
+
+        // "PESU Hospitals" — dark navy bold, vertically centered beside logo
+        doc.setFont('helvetica', 'bold');
         doc.setFontSize(16);
-        doc.setTextColor(0, 0, 0);
-        doc.text("CONFIDENTIAL CLINICAL RECORD", 105, 30, null, null, "center");
+        doc.setTextColor(30, 45, 100);
+        doc.text('PESU Hospitals', margin + 22, y + 11);
+        y += 22;
 
-        // Horizontal Line
-        doc.setLineWidth(0.5);
-        doc.line(20, 35, 190, 35);
-        
-        doc.setFontSize(12);
-        
-        // Block 1: Patient Data
-        doc.setFont(undefined, 'bold');
-        doc.text("A. Patient Demographics", 20, 45);
-        doc.setFont(undefined, 'normal');
-        doc.text(`Patient Name: ${surgery.patientName}`, 25, 55);
-        doc.text(`UHID: ${surgery.uhid}`, 25, 63);
-        doc.text(`IP Number: ${surgery.ipNumber || 'N/A'}`, 120, 63);
-        doc.text(`Age/Sex: ${surgery.age} / ${surgery.sex}`, 25, 71);
-        doc.text(`Ward: ${surgery.ward}`, 120, 71);
-        
-        // Block 2: Clinical Details
-        doc.setFont(undefined, 'bold');
-        doc.text("B. Surgical Details", 20, 85);
-        doc.setFont(undefined, 'normal');
-        doc.text(`Diagnosis: ${surgery.diagnosis}`, 25, 95);
-        doc.text(`Intervention: ${surgery.surgery}`, 25, 103);
-        doc.text(`Category & Priority: ${surgery.surgeryCategory} (${surgery.priority})`, 25, 111);
-        
-        // Block 3: Team Configuration
-        doc.setFont(undefined, 'bold');
-        doc.text("C. Intraoperative Staffing", 20, 125);
-        doc.setFont(undefined, 'normal');
-        doc.text(`Lead Surgeon: ${surgery.surgeonName}`, 25, 135);
-        doc.text(`Anesthesiologist: ${surgery.anesthesiologist}`, 120, 135);
-        doc.text(`Anaesthesia Type: ${surgery.anaesthesiaType}`, 120, 143);
-        doc.text(`Scrub Nurse: ${surgery.scrubNurse}`, 25, 143);
-        doc.text(`OT Tech: ${surgery.otTechnician}`, 25, 151);
 
-        // Block 4: Timing
-        doc.setFont(undefined, 'bold');
-        doc.text("D. Chronology", 20, 165);
-        doc.setFont(undefined, 'normal');
-        doc.text(`Commenced: ${new Date(surgery.startTime).toLocaleString()}`, 25, 175);
-        doc.text(`Completed: ${new Date(surgery.endTime).toLocaleString()}`, 25, 183);
-        doc.text(`Final Status: ${surgery.status.toUpperCase()}`, 120, 175);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(30, 30, 30);
+        doc.text('OPERATION THEATRE RECORD SHEET', pageW / 2, y, { align: 'center' });
+        y += 4;
 
-        doc.save(`Patient_Record_${surgery.uhid}.pdf`);
+        doc.setDrawColor(180, 180, 180);
+        doc.setLineWidth(0.4);
+        doc.line(margin, y, pageW - margin, y);
+        y += 5;
+
+        // ── 1. Patient Details ────────────────────────────────────────────────
+        sectionHeader('Patient Details');
+        row2col('Patient Name:', surgery.patientName, 'UHID:', surgery.uhid);
+        row2col('IP Number:', surgery.ipNumber || 'N/A', 'Age / Sex:', `${surgery.age} / ${surgery.sex}`);
+        row2col('Ward:', surgery.ward, 'Ward:', surgery.ward);
+        y += 2;
+
+        // ── 2. Surgical Information ───────────────────────────────────────────
+        sectionHeader('Surgical Information');
+        const startDt = new Date(surgery.startTime);
+        const endDt   = new Date(surgery.endTime);
+        const fmt = (d) => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateFmt = (d) => d.toLocaleDateString('en-GB').replaceAll('/', '/');
+        row2col('Date:', dateFmt(startDt), 'Time (Start - End):', `${fmt(startDt)} - ${fmt(endDt)}`);
+        row2col('Operation Theatre:', surgery.operationTheatreId?.name || 'N/A', 'Surgery Type:', surgery.surgery?.substring(0, 20));
+        row2col('Category:', surgery.surgeryCategory, 'Priority:', surgery.priority);
+        y += 2;
+
+        // ── 3. Clinical Details ───────────────────────────────────────────────
+        sectionHeader('Clinical Details');
+        row1col('Diagnosis:', surgery.diagnosis);
+        row1col('Surgery/Procedure:', surgery.surgery);
+        y += 2;
+
+        // ── 4. OT Staff Details ───────────────────────────────────────────────
+        sectionHeader('OT Staff Details');
+        row1col('Lead Surgeon:', surgery.surgeonName);
+        row2col('Anesthesiologist:', surgery.anesthesiologist, 'Scrub Nurse:', surgery.scrubNurse);
+        row1col('OT Technician:', surgery.otTechnician);
+        y += 2;
+
+        // ── 5. Anaesthesia  |  Outcome / Remarks  (side by side) ─────────────
+        const anaStart = y;
+        sectionHeader('Anaesthesia');
+        row1col('Type:', surgery.anaesthesiaType);
+        const anaEnd = y;
+
+        // rewind and do right column
+        y = anaStart;
+        const rhX = colMid + 2;
+
+        doc.setFillColor(220, 225, 235);
+        doc.rect(colMid, y, pageW - margin - colMid, 7, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(30, 30, 30);
+        doc.text('Outcome / Remarks', rhX, y + 5);
+        y += 10;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(60, 60, 60);
+        doc.text('Surgery Outcome:', rhX, y);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Successful', rhX + 32, y);
+        y += 7;
+
+        doc.setFont('helvetica', 'normal');
+        doc.text('Complications (if any):', rhX, y);
+        doc.setFont('helvetica', 'bold');
+        doc.text('None', rhX + 38, y);
+
+        y = Math.max(anaEnd, y) + 4;
+
+        // ── 6. Intraoperative Notes  |  Post-Operative Orders ────────────────
+        const notesStart = y;
+        sectionHeader('Intraoperative Notes');
+
+        // Intraoperative Notes — left blank for manual writing
+        y += 30; // blank writing space
+        const notesEnd = y;
+
+        // right column — Post-Operative Orders
+        y = notesStart;
+        doc.setFillColor(220, 225, 235);
+        doc.rect(colMid, y, pageW - margin - colMid, 7, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(30, 30, 30);
+        doc.text('Post-Operative Orders', rhX, y + 5);
+        y += 10;
+
+        // Post-Operative Orders — left blank for doctor to fill manually
+        y += 30; // blank writing space
+
+        y = Math.max(notesEnd, y) + 5;
+
+        // ── 7. Signatures ─────────────────────────────────────────────────────
+        sectionHeader('Signatures');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(60, 60, 60);
+        doc.text('Surgeon Signature:', margin + 2, y + 5);
+        doc.setDrawColor(100, 100, 100);
+        doc.setLineWidth(0.3);
+        doc.line(margin + 38, y + 5, margin + 80, y + 5);
+        // Blank — for manual signing
+
+        // ── Footer ────────────────────────────────────────────────────────────
+        doc.setFontSize(7.5);
+        doc.setTextColor(150, 150, 150);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Generated: ${new Date().toLocaleString()}  |  UHID: ${surgery.uhid}  |  CONFIDENTIAL`, pageW / 2, 290, { align: 'center' });
+
+        doc.save(`OT_Record_${surgery.uhid}.pdf`);
     };
 
     return (

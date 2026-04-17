@@ -130,29 +130,34 @@ export default function ScheduleModal({
     setFormData(EMPTY_FORM_DATA);
   }, [showModal, mode, initialData]);
 
+  // Load all OTs immediately so the dropdown is never empty
   useEffect(() => {
-    if (showModal && formData.startTime && formData.endTime) {
-      if (new Date(formData.startTime) >= new Date(formData.endTime)) {
-        setOts([]);
-        return;
-      }
+    if (!showModal) return;
+    axios
+      .get('http://localhost:5000/api/ots')
+      .then((res) => setOts(res.data))
+      .catch((err) => console.error(err));
+  }, [showModal]);
 
-      const params = new URLSearchParams({
-        startTime: formData.startTime,
-        endTime: formData.endTime,
-      });
+  // Re-filter to available-only once both times are selected
+  useEffect(() => {
+    if (!showModal) return;
+    if (!formData.startTime || !formData.endTime) return;
+    if (new Date(formData.startTime) >= new Date(formData.endTime)) return;
 
-      if (mode === "edit" && editSurgeryId) {
-        params.set("excludeSurgeryId", editSurgeryId);
-      }
+    const params = new URLSearchParams({
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+    });
 
-      axios
-        .get(`http://localhost:5000/api/ots/available?${params.toString()}`)
-        .then((res) => setOts(res.data))
-        .catch((err) => console.error(err));
-    } else {
-      setOts([]);
+    if (mode === 'edit' && editSurgeryId) {
+      params.set('excludeSurgeryId', editSurgeryId);
     }
+
+    axios
+      .get(`http://localhost:5000/api/ots/available?${params.toString()}`)
+      .then((res) => setOts(res.data))
+      .catch((err) => console.error(err));
   }, [showModal, formData.startTime, formData.endTime, mode, editSurgeryId]);
 
   if (!showModal) return null;
@@ -565,9 +570,7 @@ export default function ScheduleModal({
                     value={formData.operationTheatreId}
                   >
                     <option value="">
-                      {!formData.startTime || !formData.endTime
-                        ? "-- Select Time --"
-                        : "-- Assign Theatre --"}
+                      {ots.length === 0 ? '-- Loading Theatres --' : '-- Select Theatre --'}
                     </option>
                     {selectedOtMissing && (
                       <option value={formData.operationTheatreId}>
