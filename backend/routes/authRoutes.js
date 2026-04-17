@@ -95,17 +95,40 @@ router.post('/create', authMiddleware, async (req, res) => {
     }
 });
 
-// Admin Route: Delete User
-router.delete('/users/:id', authMiddleware, async (req, res) => {
+// Update own display name
+router.put('/profile', authMiddleware, async (req, res) => {
     try {
-        if (req.user.role !== 'Admin') return res.status(403).json({ message: 'Access denied' });
-        
-        const userToDelete = await User.findById(req.params.id);
-        if (!userToDelete) return res.status(404).json({ message: 'User not found' });
-        if (userToDelete.role === 'Admin') return res.status(403).json({ message: 'Cannot delete Admin accounts' });
-        
-        await User.findByIdAndDelete(req.params.id);
-        res.json({ message: 'User deleted successfully' });
+        const { name } = req.body;
+        if (!name || !name.trim()) return res.status(400).json({ message: 'Name cannot be empty' });
+
+        const updated = await User.findByIdAndUpdate(
+            req.user.id,
+            { name: name.trim() },
+            { new: true }
+        ).select('-password');
+
+        res.json(updated);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Change own password
+router.put('/password', authMiddleware, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword) return res.status(400).json({ message: 'Both fields are required' });
+        if (newPassword.length < 6) return res.status(400).json({ message: 'New password must be at least 6 characters' });
+
+        const user = await User.findById(req.user.id);
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) return res.status(401).json({ message: 'Current password is incorrect' });
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+        await user.save();
+
+        res.json({ message: 'Password updated successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

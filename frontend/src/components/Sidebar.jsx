@@ -3,11 +3,14 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Calendar, ShieldAlert, Users, LogOut, Settings, User as UserIcon, ChevronUp, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../context/AuthContext';
+import ProfileModal from './ProfileModal';
 
 export default function Sidebar() {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
     const [showPopover, setShowPopover] = useState(false);
+    const [showProfile, setShowProfile] = useState(false);
+    const [profileTab, setProfileTab] = useState('profile');
     const popoverRef = useRef(null);
 
     useEffect(() => {
@@ -40,6 +43,7 @@ export default function Sidebar() {
     const avatar = `https://ui-avatars.com/api/?name=${user?.name || 'User'}&background=2563eb&color=fff`;
 
     return (
+        <>
         <motion.aside
             initial={{ x: -250 }}
             animate={{ x: 0 }}
@@ -85,11 +89,11 @@ export default function Sidebar() {
                                 className="absolute bottom-full mb-3 w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
                             >
                                 <div className="p-2 space-y-1">
-                                    <button onClick={() => alert('Profile feature coming soon!')} className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 transition-colors text-sm font-medium">
+                                    <button onClick={() => { setProfileTab('profile'); setShowProfile(true); setShowPopover(false); }} className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 transition-colors text-sm font-medium">
                                         <UserIcon className="w-4 h-4 text-gray-500" />
                                         <span>My Profile</span>
                                     </button>
-                                    <button onClick={() => alert('Password flow coming soon!')} className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 transition-colors text-sm font-medium">
+                                    <button onClick={() => { setProfileTab('password'); setShowProfile(true); setShowPopover(false); }} className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 transition-colors text-sm font-medium">
                                         <Settings className="w-4 h-4 text-gray-500" />
                                         <span>Change Password</span>
                                     </button>
@@ -120,5 +124,13 @@ export default function Sidebar() {
                 </div>
             </div>
         </motion.aside>
+
+        {showProfile && (
+            <ProfileModal
+                initialTab={profileTab}
+                onClose={() => setShowProfile(false)}
+            />
+        )}
+        </>
     );
 }
