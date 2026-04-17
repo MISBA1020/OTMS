@@ -1,12 +1,15 @@
 import express from "express";
 import Surgery from "../models/Surgery.js";
 import OperationTheatre from "../models/OperationTheatre.js";
+import { syncSurgeryStatuses } from "../services/surgeryStatusSync.js";
 
 const router = express.Router();
 
 // Get all surgeries, optionally filtered by OT or status
 router.get("/", async (req, res) => {
   try {
+    await syncSurgeryStatuses();
+
     const { operationTheatreId, status } = req.query;
     let filter = {};
     if (operationTheatreId) filter.operationTheatreId = operationTheatreId;
@@ -22,6 +25,8 @@ router.get("/", async (req, res) => {
 // Schedule a new surgery
 router.post("/", async (req, res) => {
   try {
+    await syncSurgeryStatuses();
+
     const { operationTheatreId, startTime, endTime } = req.body;
 
     // Check for overlaps
@@ -61,6 +66,8 @@ router.post("/", async (req, res) => {
 // Update surgery status
 router.put("/:id", async (req, res) => {
   try {
+    await syncSurgeryStatuses();
+
     const existingSurgery = await Surgery.findById(req.params.id);
     if (!existingSurgery) {
       return res.status(404).json({ message: "Surgery not found" });
@@ -89,11 +96,9 @@ router.put("/:id", async (req, res) => {
     });
 
     if (overlapping) {
-      return res
-        .status(400)
-        .json({
-          message: "Time slot overlaps with an existing surgery in this OT.",
-        });
+      return res.status(400).json({
+        message: "Time slot overlaps with an existing surgery in this OT.",
+      });
     }
 
     const updated = await Surgery.findByIdAndUpdate(req.params.id, req.body, {
