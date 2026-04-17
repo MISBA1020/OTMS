@@ -109,17 +109,17 @@ export default function Scheduling() {
                     {surgery.operationTheatreId?.name || "Unknown"}
                   </td>
                   <td className="px-6 py-5 font-medium text-gray-500">
-                    {surgery.surgeryType}
+                    {surgery.surgeryCategory}
                   </td>
-                  <td className="px-6 py-5">
-                    <div className="flex items-center text-gray-800 font-semibold">
-                      <CalendarIcon className="w-4 h-4 mr-2 text-primary-500" />{" "}
+                  <td className="px-6 py-5 border-l-0">
+                    <div className="flex items-center text-gray-800 font-semibold mb-1">
+                      <CalendarIcon className="w-4 h-4 mr-2 text-primary-500 shrink-0" />{" "}
                       {format(new Date(surgery.startTime), "MMM dd, yyyy")}
                     </div>
-                    <div className="flex items-center mt-1 text-xs text-gray-500 font-medium">
-                      <Clock className="w-3.5 h-3.5 mr-2" />{" "}
-                      {format(new Date(surgery.startTime), "HH:mm")} -{" "}
-                      {format(new Date(surgery.endTime), "HH:mm")}
+                    <div className="flex items-center text-xs text-gray-500 font-medium">
+                      <Clock className="w-4 h-4 mr-2 shrink-0" />{" "}
+                      <span>{format(new Date(surgery.startTime), "HH:mm")} -{" "}
+                      {format(new Date(surgery.endTime), "HH:mm")}</span>
                     </div>
                   </td>
                   <td className="px-6 py-5">
@@ -148,6 +148,7 @@ export default function Scheduling() {
                         >
                           Start OP
                         </button>
+                        {/* if OT in use and the user tries to start another Operation give alert that the OT is already in use */}
                         <button
                           onClick={() =>
                             setMenuOpenFor((prev) =>

@@ -184,7 +184,7 @@ export default function Reports() {
                             <th className="px-6 pb-2 font-semibold">Diagnosis & Procedure</th>
                             <th className="px-6 pb-2 font-semibold">Surgical Team</th>
                             <th className="px-6 pb-2 font-semibold">Schedule Log</th>
-                            <th className="px-6 pb-2 font-semibold text-right">Individual Extraction</th>
+                            <th className="px-6 pb-2 font-semibold text-center">Individual Extraction</th>
                         </tr>
                     </thead>
                     <tbody className="text-sm">
@@ -209,10 +209,10 @@ export default function Reports() {
                                         {s.status}
                                     </span>
                                 </td>
-                                <td className="px-6 py-5 rounded-r-3xl text-right">
+                                <td className="px-6 py-5 rounded-r-3xl text-center">
                                     <button 
                                         onClick={() => downloadPatientRecord(s)}
-                                        className="bg-white border border-gray-200 text-gray-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 px-4 py-2.5 rounded-xl font-bold flex items-center w-max ml-auto transition-colors shadow-sm"
+                                        className="bg-white border border-gray-200 text-gray-600 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 px-4 py-2.5 rounded-xl font-bold flex items-center justify-center w-max mx-auto transition-colors shadow-sm"
                                     >
                                         <Download className="w-4 h-4 mr-2" /> PDF Record
                                     </button>

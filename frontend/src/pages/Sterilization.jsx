@@ -73,9 +73,9 @@ export default function Sterilization() {
                 <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <h2 className="font-bold text-gray-900">Recent Cycles</h2>
-                        <div className="relative">
-                            <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
-                            <input placeholder="Search logs..." className="pl-9 pr-4 py-2 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-purple-500 text-sm outline-none w-64" />
+                        <div className="relative flex items-center">
+                            <Search className="w-5 h-5 absolute left-3 text-gray-400" />
+                            <input placeholder="Search logs..." className="pl-10 pr-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-purple-500 text-sm outline-none w-64" />
                         </div>
                     </div>
                     <div className="divide-y divide-gray-100">
@@ -118,7 +118,7 @@ export default function Sterilization() {
                 <div className="space-y-6">
                     <div className="bg-purple-50 border border-purple-100 rounded-2xl p-6">
                         <h3 className="font-bold text-purple-900 flex items-center"><ShieldCheck className="w-5 h-5 mr-2" /> Compliance Status</h3>
-                        <p className="text-purple-700 text-sm mt-2">Currently, {ots.filter(ot => ot.status === 'Available').length} OTs are fully sterilized and ready for use. Ensuring a rigorous sterilization process avoids cross-contamination.</p>
+                        <p className="text-purple-900 text-sm mt-2 font-medium leading-relaxed">Currently, {ots.filter(ot => ot.status === 'Available').length} OTs are fully sterilized and ready for use. Ensuring a rigorous sterilization process avoids cross-contamination.</p>
                     </div>
                 </div>
             </div>
