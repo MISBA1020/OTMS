@@ -46,7 +46,7 @@ export default function Sidebar() {
             className="w-64 bg-white/50 backdrop-blur-2xl border-r border-white/60 flex flex-col h-screen fixed shadow-[4px_0_24px_rgba(30,58,138,0.05)] z-20"
         >
             <div className="p-6 flex items-center space-x-3 mt-2">
-                <img src="pes logo.webp" alt="" className='w-15'/>
+                <img src="pes logo.webp" alt=" PES" className='w-15 rounded-full'/>
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 tracking-tight">
                     PESU Hospitals
                 </span>
