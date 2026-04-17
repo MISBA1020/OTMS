@@ -1,12 +1,15 @@
 import express from "express";
 import OperationTheatre from "../models/OperationTheatre.js";
 import Surgery from "../models/Surgery.js";
+import { syncSurgeryStatuses } from "../services/surgeryStatusSync.js";
 
 const router = express.Router();
 
 // Get all OTs
 router.get("/", async (req, res) => {
   try {
+    await syncSurgeryStatuses();
+
     const ots = await OperationTheatre.find();
     res.json(ots);
   } catch (error) {
@@ -17,6 +20,8 @@ router.get("/", async (req, res) => {
 // Get available OTs for a time slot
 router.get("/available", async (req, res) => {
   try {
+    await syncSurgeryStatuses();
+
     const { startTime, endTime, excludeSurgeryId } = req.query;
     if (!startTime || !endTime) {
       const ots = await OperationTheatre.find();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -15,18 +15,24 @@ export default function Scheduling() {
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [selectedSurgery, setSelectedSurgery] = useState(null);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/surgeries");
       setSurgeries(res.data);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [fetchData]);
 
   const handleStatusChange = async (id, status) => {
     try {
