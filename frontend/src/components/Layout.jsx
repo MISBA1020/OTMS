@@ -4,12 +4,12 @@ import Navbar from "./Navbar";
 
 export default function Layout({ children }) {
   return (
-    <div className="bg-[#f8fafc] min-h-screen selection:bg-primary-100 selection:text-primary-900 relative overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       <Navbar />
-      <div className="flex">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 ml-64 p-10 md:p-12 overflow-y-auto relative w-full h-[calc(100vh-80px)]">
-          <div className="max-w-7xl mx-auto pb-20">{children}</div>
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="max-w-7xl mx-auto pb-10">{children}</div>
         </main>
       </div>
     </div>

@@ -59,43 +59,43 @@ export default function AdminPanel() {
         <div className="space-y-8">
             <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Admin Control Panel</h1>
-                    <p className="text-gray-500 mt-1">Manage personnel access and roles</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white transition-colors">Admin Control Panel</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1 transition-colors">Manage personnel access and roles</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1">
-                    <div className="glass-panel rounded-3xl p-8 sticky top-8">
+                    <div className="glass-panel dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-3xl p-8 sticky top-8 transition-colors">
                         <div className="flex items-center space-x-3 mb-8">
-                            <div className="p-3 bg-secondary-50 text-secondary-500 rounded-xl">
+                            <div className="p-3 bg-secondary-50 dark:bg-secondary-900/30 text-secondary-500 dark:text-secondary-400 rounded-xl">
                                 <UserPlus className="w-6 h-6" />
                             </div>
-                            <h2 className="text-2xl font-bold text-gray-900">Register User</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Register User</h2>
                         </div>
                         
                         <form onSubmit={handleCreateUser} className="space-y-5">
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1.5 mt-1">Full Name</label>
-                                <input required className="w-full bg-white/50 border border-gray-200 rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none"
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5 mt-1 transition-colors">Full Name</label>
+                                <input required className="w-full bg-white/50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none placeholder-gray-400 dark:placeholder-gray-500"
                                     onChange={e => setFormData({ ...formData, name: e.target.value })} value={formData.name}/>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1.5">Username</label>
-                                <input required className="w-full bg-white/50 border border-gray-200 rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none"
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5 transition-colors">Username</label>
+                                <input required className="w-full bg-white/50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none placeholder-gray-400 dark:placeholder-gray-500"
                                     onChange={e => setFormData({ ...formData, username: e.target.value })} value={formData.username}/>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1.5">Temporary Password</label>
-                                <input required type="password" className="w-full bg-white/50 border border-gray-200 rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none"
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5 transition-colors">Temporary Password</label>
+                                <input required type="password" className="w-full bg-white/50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none placeholder-gray-400 dark:placeholder-gray-500"
                                     onChange={e => setFormData({ ...formData, password: e.target.value })} value={formData.password}/>
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1.5">System Role</label>
-                                <select required className="w-full bg-white/50 border border-gray-200 rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all outline-none cursor-pointer"
+                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5 transition-colors">System Role</label>
+                                <select required className="w-full bg-white/50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none cursor-pointer"
                                     onChange={e => setFormData({ ...formData, role: e.target.value })} value={formData.role}>
-                                    <option value="User">Doctor / Personnel</option>
-                                    <option value="Admin">System Administrator</option>
+                                    <option className="dark:bg-slate-800" value="User">Doctor / Personnel</option>
+                                    <option className="dark:bg-slate-800" value="Admin">System Administrator</option>
                                 </select>
                             </div>
                             <button type="submit" className="w-full bg-gradient-to-r from-primary-600 to-indigo-600 hover:to-indigo-700 text-white py-4 mt-6 rounded-2xl font-bold text-lg shadow-xl shadow-primary-500/30 hover:-translate-y-0.5 transition-all">
@@ -108,7 +108,7 @@ export default function AdminPanel() {
                 <div className="lg:col-span-2">
                     <div className="overflow-x-auto pb-10">
                         <table className="w-full text-sm text-left border-separate border-spacing-y-3">
-                            <thead className="text-gray-500 font-medium tracking-wide">
+                            <thead className="text-gray-500 dark:text-gray-400 font-medium tracking-wide transition-colors">
                                 <tr>
                                     <th className="px-6 pb-2 font-semibold text-base">Authorized Personnel</th>
                                     <th className="px-6 pb-2 font-semibold text-base">Identifier (UID)</th>
@@ -117,15 +117,15 @@ export default function AdminPanel() {
                                 </tr>
                             </thead>
                             <tbody className="text-base">
-                                {loading && <tr><td colSpan="4" className="px-6 py-16 text-center text-gray-400 font-bold glass-panel rounded-3xl">Loading Directory...</td></tr>}
+                                {loading && <tr><td colSpan="4" className="px-6 py-16 text-center text-gray-400 dark:text-gray-500 font-bold glass-panel dark:bg-slate-900 dark:border-slate-800 rounded-3xl">Loading Directory...</td></tr>}
                                 {!loading && users.map(u => (
-                                    <tr key={u._id} className="glass-panel hover:-translate-y-1 transition-all duration-300">
-                                        <td className="px-6 py-5 font-bold text-gray-900 rounded-l-3xl">{u.name}</td>
-                                        <td className="px-6 py-5 text-gray-500 font-medium">{u.username}</td>
+                                    <tr key={u._id} className="glass-panel dark:bg-slate-900 border border-transparent dark:border-slate-800 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+                                        <td className="px-6 py-5 font-bold text-gray-900 dark:text-slate-100 rounded-l-3xl">{u.name}</td>
+                                        <td className="px-6 py-5 text-gray-500 dark:text-gray-400 font-medium">{u.username}</td>
                                         <td className="px-6 py-5">
                                             {u.role === 'Admin' ? 
-                                                <span className="flex items-center text-xs font-bold text-purple-700 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-full w-max shadow-sm"><Shield className="w-3.5 h-3.5 mr-1.5"/> System Admin</span> : 
-                                                <span className="flex items-center text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full w-max shadow-sm"><User className="w-3.5 h-3.5 mr-1.5"/> Med Personnel</span>
+                                                <span className="flex items-center text-xs font-bold text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800/50 px-3 py-1.5 rounded-full w-max shadow-sm"><Shield className="w-3.5 h-3.5 mr-1.5"/> System Admin</span> : 
+                                                <span className="flex items-center text-xs font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 px-3 py-1.5 rounded-full w-max shadow-sm"><User className="w-3.5 h-3.5 mr-1.5"/> Med Personnel</span>
                                             }
                                         </td>
                                         <td className="px-6 py-5 text-right rounded-r-3xl">
@@ -133,7 +133,7 @@ export default function AdminPanel() {
                                                 onClick={() => handleDeleteUser(u._id, u.role)}
                                                 disabled={u.role === 'Admin'}
                                                 title={u.role === 'Admin' ? "Cannot delete System Admin" : "Delete user"}
-                                                className={`p-2.5 rounded-xl transition-all shadow-sm border ${u.role === 'Admin' ? 'text-gray-300 border-gray-100 cursor-not-allowed bg-gray-50' : 'text-rose-500 bg-white border-rose-100 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 hover:-translate-y-0.5 hover:shadow-md'}`}
+                                                className={`p-2.5 rounded-xl transition-all shadow-sm border ${u.role === 'Admin' ? 'text-gray-300 dark:text-gray-600 border-gray-100 dark:border-slate-700 cursor-not-allowed bg-gray-50 dark:bg-slate-800/50' : 'text-rose-500 dark:text-rose-400 bg-white dark:bg-slate-800 border-rose-100 dark:border-slate-700 hover:bg-rose-50 dark:hover:bg-rose-900/30 hover:text-rose-700 dark:hover:text-rose-300 hover:border-rose-200 dark:hover:border-rose-800/50 hover:-translate-y-0.5 hover:shadow-md'}`}
                                             >
                                                 <Trash2 className="w-5 h-5" />
                                             </button>
