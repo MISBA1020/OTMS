@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
   --color-primary-50: #eff6ff;
@@ -33,12 +35,23 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
+.dark .glass {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+}
+
 .glass-panel {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 1);
   box-shadow: 0 10px 40px -10px rgba(30, 58, 138, 0.08);
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(30, 41, 59, 1);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
 }
 
 /* Specific structure for scheduling tables avoiding raw HTML table collapse */
@@ -56,4 +69,14 @@ body {
   transform: translateY(-4px);
   box-shadow: 0 12px 25px -5px rgba(30, 58, 138, 0.1);
   border-color: var(--color-primary-100);
+}
+
+/* System Overrides for Native Elements in Dark Mode */
+html.dark {
+  color-scheme: dark;
+}
+
+.dark select option {
+  background-color: #1e293b; /* map to slate-800 for unified depth */
+  color: #f8fafc;
 }

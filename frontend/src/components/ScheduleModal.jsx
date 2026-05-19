@@ -260,14 +260,14 @@ export default function ScheduleModal({
 
   return (
     <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl overflow-hidden transition-colors">
         {/* Header */}
-        <div className="px-8 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
+        <div className="px-8 py-5 border-b border-gray-100 dark:border-slate-800 flex justify-between items-center bg-gray-50 dark:bg-slate-800/30 shrink-0">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Schedule Comprehensive Surgery
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Complete the mandatory operational and clinical context
             </p>
           </div>
@@ -278,43 +278,43 @@ export default function ScheduleModal({
           <form id="surgeryForm" onSubmit={handleSubmit} className="space-y-8">
             {/* Section 1: Patient Information */}
             <div>
-              <h3 className="text-lg font-bold text-gray-800 flex items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 flex items-center mb-4 transition-colors">
                 <User className="w-5 h-5 mr-2 text-secondary-500" /> Patient
                 Demographics
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     UHID
                   </label>
                   <input
                     required
                     name="uhid"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.uhid}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Patient Name
                   </label>
                   <input
                     required
                     name="patientName"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.patientName}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Ward Assignment
                   </label>
                   <select
                     required
                     name="ward"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.ward}
                   >
@@ -326,7 +326,7 @@ export default function ScheduleModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Aadhar Number
                   </label>
                   <input
@@ -337,46 +337,46 @@ export default function ScheduleModal({
                     title="Please enter exactly 12 digits"
                     required
                     name="aadharNo"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.aadharNo}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     I.P Number
                   </label>
                   <input
                     type="number"
                     required
                     name="ipNumber"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.ipNumber}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-600 font-bold mb-1">
+                    <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                       Age
                     </label>
                     <input
                       type="number"
                       required
                       name="age"
-                      className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                       onChange={handleChange}
                       value={formData.age}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-600 font-bold mb-1">
+                    <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                       Sex
                     </label>
                     <select
                       required
                       name="sex"
-                      className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                      className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                       onChange={handleChange}
                       value={formData.sex}
                     >
@@ -391,20 +391,20 @@ export default function ScheduleModal({
 
             {/* Section 2: Operational & Staff Commitments */}
             <div>
-              <h3 className="text-lg font-bold text-gray-800 flex items-center mb-4 pt-4 border-t border-gray-100">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 flex items-center mb-4 pt-4 border-t border-gray-100 dark:border-slate-800 transition-colors">
                 <ShieldAlert className="w-5 h-5 mr-2 text-emerald-500" />{" "}
                 Operational & Staff Commitments
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Lead Surgeon
                   </label>
                   <select
                     required
                     name="surgeonName"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.surgeonName}
                   >
@@ -417,13 +417,13 @@ export default function ScheduleModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Anesthesiologist
                   </label>
                   <select
                     required
                     name="anesthesiologist"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.anesthesiologist}
                   >
@@ -436,13 +436,13 @@ export default function ScheduleModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Scrub Nurse
                   </label>
                   <select
                     required
                     name="scrubNurse"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.scrubNurse}
                   >
@@ -455,13 +455,13 @@ export default function ScheduleModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     OT Technician
                   </label>
                   <select
                     required
                     name="otTechnician"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.otTechnician}
                   >
@@ -477,13 +477,13 @@ export default function ScheduleModal({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Anaesthesia Type
                   </label>
                   <select
                     required
                     name="anaesthesiaType"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.anaesthesiaType}
                   >
@@ -495,27 +495,27 @@ export default function ScheduleModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Start Time
                   </label>
                   <input
                     required
                     type="datetime-local"
                     name="startTime"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.startTime}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     End Time
                   </label>
                   <input
                     required
                     type="datetime-local"
                     name="endTime"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.endTime}
                   />
@@ -525,33 +525,33 @@ export default function ScheduleModal({
 
             {/* Section 3: Clinical Details */}
             <div>
-              <h3 className="text-lg font-bold text-gray-800 flex items-center mb-4 pt-4 border-t border-gray-100">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-slate-200 flex items-center mb-4 pt-4 border-t border-gray-100 dark:border-slate-800 transition-colors">
                 <Activity className="w-5 h-5 mr-2 text-rose-500" /> Clinical &
                 Operation Details
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Diagnosis
                   </label>
                   <textarea
                     required
                     name="diagnosis"
                     rows="2"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.diagnosis}
                   ></textarea>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Surgery Request
                   </label>
                   <textarea
                     required
                     name="surgery"
                     rows="2"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.surgery}
                   ></textarea>
@@ -559,13 +559,13 @@ export default function ScheduleModal({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Operation Theatre
                   </label>
                   <select
                     required
                     name="operationTheatreId"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none bg-blue-50/50"
+                    className="w-full bg-blue-50/50 dark:bg-blue-900/20 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.operationTheatreId}
                   >
@@ -585,13 +585,13 @@ export default function ScheduleModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Surgery Category
                   </label>
                   <select
                     required
                     name="surgeryCategory"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.surgeryCategory}
                   >
@@ -600,13 +600,13 @@ export default function ScheduleModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 font-bold mb-1">
+                  <label className="block text-sm text-gray-600 dark:text-gray-300 font-bold mb-1 transition-colors">
                     Priority Selection
                   </label>
                   <select
                     required
                     name="priority"
-                    className="w-full border-gray-300 rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white rounded-lg p-2.5 border focus:ring-2 focus:ring-primary-500 outline-none transition-colors"
                     onChange={handleChange}
                     value={formData.priority}
                   >
@@ -621,11 +621,11 @@ export default function ScheduleModal({
         </div>
 
         {/* Footer Controls */}
-        <div className="px-8 py-5 border-t border-gray-100 bg-gray-50 flex justify-end space-x-3 shrink-0">
+        <div className="px-8 py-5 border-t border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/30 flex justify-end space-x-3 shrink-0 transition-colors">
           <button
             type="button"
             onClick={closeModal}
-            className="px-6 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-200 transition-colors"
+            className="px-6 py-2.5 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
           >
             Cancel
           </button>
@@ -642,14 +642,14 @@ export default function ScheduleModal({
       {/* Generic Add Staff Modal */}
       {addStaffModal.show && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl w-96 p-6">
-            <h3 className="text-xl font-bold mb-4">{addStaffModal.title}</h3>
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-96 p-6 transition-colors">
+            <h3 className="text-xl font-bold mb-4 dark:text-white text-gray-900">{addStaffModal.title}</h3>
             <input
               autoFocus
               type="text"
               value={newStaffName}
               onChange={(e) => setNewStaffName(e.target.value)}
-              className="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none mb-5"
+              className="w-full bg-white dark:bg-slate-800 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-700 p-2.5 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none mb-5 transition-colors"
               placeholder="e.g., Dr. First Last"
             />
             <div className="flex justify-end space-x-3">
@@ -658,7 +658,7 @@ export default function ScheduleModal({
                   setAddStaffModal({ show: false, role: "", title: "" });
                   setNewStaffName("");
                 }}
-                className="px-4 py-2 font-semibold text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
               >
                 Cancel
               </button>
