@@ -113,7 +113,7 @@ export default function Dashboard() {
     },
     {
       name: "Ready (Stored)",
-      value: cssdSets.filter((s) => s.status === "Stored").length,
+      value: cssdSets.filter((s) => s.status === "Stored" || s.status === "Sterile").length,
       icon: Package,
       color: "text-emerald-500",
     },

@@ -71,13 +71,26 @@ const sterilizationSetSchema = new mongoose.Schema({
     }]
 }, { timestamps: true });
 
-// Auto-generate setId before save
+// Auto-generate unique setId before save
 sterilizationSetSchema.pre('save', async function () {
     if (!this.setId) {
         const zoneNum = this.zone.replace('Zone ', '');
-        const count = await mongoose.model('SterilizationSet').countDocuments({ zone: this.zone });
-        const seq = String(count + 1).padStart(4, '0');
-        this.setId = `Z${zoneNum}-${seq}`;
+        const prefix = `Z${zoneNum}-`;
+
+        // Find the highest existing setId for this zone (works after deletions/restarts)
+        const latest = await mongoose.model('SterilizationSet')
+            .findOne({ setId: { $regex: `^${prefix}` } })
+            .sort({ setId: -1 })
+            .select('setId')
+            .lean();
+
+        let nextSeq = 1;
+        if (latest?.setId) {
+            const lastNum = parseInt(latest.setId.replace(prefix, ''), 10);
+            if (!isNaN(lastNum)) nextSeq = lastNum + 1;
+        }
+
+        this.setId = `${prefix}${String(nextSeq).padStart(4, '0')}`;
     }
 });
 

@@ -330,19 +330,14 @@ function SetCard({ set, onEdit, onQR, onDelete, onMove, userRole }) {
             </button>
           )}
           {set.status === 'Sterilizing' && (
-             <button 
-                onClick={() => onMove(set, 'Marked as Sterile', 'Zone 2', 'Sterile')} 
-                disabled={userRole !== 'Supervisor' && userRole !== 'CSSD Manager' && userRole !== 'Admin'}
-                className="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title={userRole !== 'Supervisor' && userRole !== 'CSSD Manager' && userRole !== 'Admin' ? 'Requires Supervisor verification' : ''}
-              >
-               Mark Sterile
-             </button>
+            <button onClick={() => onMove(set, 'Sterilization Completed', 'Zone 3', 'Sterile')} className="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition-colors">
+              ✓ Sterilization Completed
+            </button>
           )}
           {set.status === 'Sterile' && (
-             <button onClick={() => onMove(set, 'Moved to Sterile Storage', 'Zone 3', 'Stored')} className="flex-1 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
-               Move to Sterile Storage
-             </button>
+            <button onClick={() => onMove(set, 'Moved to Sterile Storage', 'Zone 3', 'Sterile')} className="flex-1 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
+              Move to Sterile Storage
+            </button>
           )}
         </>
       );
@@ -350,7 +345,7 @@ function SetCard({ set, onEdit, onQR, onDelete, onMove, userRole }) {
     if (set.zone === 'Zone 3') {
       return (
         <>
-          {set.status === 'Stored' && (
+          {(set.status === 'Stored' || set.status === 'Sterile') && (
              <button onClick={() => window.dispatchEvent(new CustomEvent('openIssueModal', { detail: set }))} className="flex-1 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold transition-colors">
                Issue to OT
              </button>
@@ -472,7 +467,8 @@ export default function Sterilization() {
         action,
         zone: targetZone,
         status: targetStatus,
-        issuedToOT
+        issuedToOT,
+        user: user?.name || user?.username || 'System'
       });
       fetchSets();
     } catch (err) {
