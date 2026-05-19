@@ -28,7 +28,15 @@ router.get('/:id', async (req, res) => {
 // POST create new set
 router.post('/', async (req, res) => {
     try {
-        const newSet = new SterilizationSet(req.body);
+        const setBody = { ...req.body };
+        // Initial history log
+        setBody.history = [{
+            status: setBody.status || 'Dirty',
+            action: 'Set Registered',
+            user: setBody.sterilizedBy || 'System',
+            timestamp: new Date()
+        }];
+        const newSet = new SterilizationSet(setBody);
         const saved = await newSet.save();
         res.status(201).json(saved);
     } catch (err) {
@@ -39,13 +47,54 @@ router.post('/', async (req, res) => {
 // PUT update set
 router.put('/:id', async (req, res) => {
     try {
+        const existingSet = await SterilizationSet.findById(req.params.id);
+        if (!existingSet) return res.status(404).json({ message: 'Set not found' });
+
+        const updates = req.body;
+        
+        // Check if status changed to log it
+        if (updates.status && updates.status !== existingSet.status) {
+            updates.$push = {
+                history: {
+                    status: updates.status,
+                    action: `Status updated to ${updates.status}`,
+                    user: updates.updatedBy || 'System',
+                    timestamp: new Date()
+                }
+            };
+        }
+
         const updated = await SterilizationSet.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            updates,
             { new: true, runValidators: true }
         );
-        if (!updated) return res.status(404).json({ message: 'Set not found' });
         res.json(updated);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// POST move set through workflow
+router.post('/:id/move', async (req, res) => {
+    try {
+        const { action, status, zone, user, notes } = req.body;
+        const set = await SterilizationSet.findById(req.params.id);
+        if (!set) return res.status(404).json({ message: 'Set not found' });
+
+        if (status) set.status = status;
+        if (zone) set.zone = zone;
+        if (notes) set.notes = notes;
+
+        set.history.push({
+            status: set.status,
+            action: action || `Moved to ${zone || set.zone}`,
+            user: user || 'System',
+            timestamp: new Date()
+        });
+
+        await set.save();
+        res.json(set);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }

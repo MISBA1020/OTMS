@@ -17,29 +17,57 @@ const sterilizationSetSchema = new mongoose.Schema({
     // Process details
     sterilizationMethod: {
         type: String,
-        enum: ['Autoclave', 'ETO', 'Dry Heat', 'Chemical'],
+        enum: ['Steam / Autoclave', 'ETO', 'Plasma'],
         required: true,
     },
     temperature: { type: String },
     pressure: { type: String },
     duration: { type: Number }, // minutes
+    aerationTime: { type: Number }, // for ETO
     cycleNumber: { type: String },
+    loadNumber: { type: String },
+    programNumber: { type: String },
+
+    // Machine Details
+    machineName: { type: String },
+    machineId: { type: String },
+    sterilizerBrand: { type: String },
+    machineSerialNumber: { type: String },
+
+    // Indicators
+    biologicalIndicator: { type: String, enum: ['Passed', 'Failed', 'Pending', 'N/A'], default: 'N/A' },
+    chemicalIndicator: { type: String, enum: ['Passed', 'Failed', 'Pending', 'N/A'], default: 'N/A' },
+    bowieDickTest: { type: String, enum: ['Passed', 'Failed', 'Pending', 'N/A'], default: 'N/A' },
+    indicatorResult: { type: String, enum: ['Passed', 'Failed', 'Pending', 'N/A'], default: 'N/A' },
 
     // Dates
-    sterilizedDate: { type: Date, required: true },
-    expiryDate: { type: Date, required: true },
+    sterilizedDate: { type: Date },
+    expiryDate: { type: Date },
 
     // Staff
-    sterilizedBy: { type: String, required: true },
-    checkedBy: { type: String, required: true },
+    sterilizedBy: { type: String }, // Made optional until sterilization is actually done
+    checkedBy: { type: String },
 
     // Outcome
     status: {
         type: String,
-        enum: ['Pending', 'Sterilized', 'Expired', 'In Use'],
-        default: 'Pending',
+        enum: ['Dirty', 'Cleaning', 'Packed', 'Sterilizing', 'Sterile', 'Stored', 'Issued', 'Returned', 'Expired', 'Failed'],
+        default: 'Dirty',
     },
     notes: { type: String, default: '' },
+    
+    // History & Attachments
+    history: [{
+        status: String,
+        action: String,
+        user: String,
+        timestamp: { type: Date, default: Date.now }
+    }],
+    attachments: [{
+        type: { type: String }, // e.g. 'machine_report', 'indicator'
+        url: String,
+        filename: String
+    }]
 }, { timestamps: true });
 
 // Auto-generate setId before save

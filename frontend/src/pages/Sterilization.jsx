@@ -11,37 +11,31 @@ const ZONE_COLORS = {
   'Zone 3': { bg: 'bg-emerald-50', border: 'border-emerald-200', badge: 'bg-emerald-100 text-emerald-800', btn: 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/30' },
 };
 const STATUS_COLORS = {
-  'Pending':    'bg-amber-100 text-amber-700',
-  'Sterilized': 'bg-emerald-100 text-emerald-700',
-  'Expired':    'bg-red-100 text-red-700',
-  'In Use':     'bg-blue-100 text-blue-700',
+  'Dirty': 'bg-gray-100 text-gray-700',
+  'Cleaning': 'bg-blue-100 text-blue-700',
+  'Packed': 'bg-indigo-100 text-indigo-700',
+  'Sterilizing': 'bg-amber-100 text-amber-700',
+  'Sterile': 'bg-emerald-100 text-emerald-700',
+  'Stored': 'bg-teal-100 text-teal-700',
+  'Issued': 'bg-purple-100 text-purple-700',
+  'Returned': 'bg-orange-100 text-orange-700',
+  'Expired': 'bg-red-100 text-red-700',
+  'Failed': 'bg-red-100 text-red-900',
+  'Pending': 'bg-gray-100 text-gray-500'
 };
-const METHODS = ['Autoclave', 'ETO', 'Dry Heat', 'Chemical'];
-const STATUSES = ['Pending', 'Sterilized', 'Expired', 'In Use'];
+const METHODS = ['Steam / Autoclave', 'ETO', 'Plasma', 'Chemical'];
+const STATUSES = ['Dirty', 'Cleaning', 'Packed', 'Sterilizing', 'Sterile', 'Stored', 'Issued', 'Returned', 'Expired', 'Failed', 'Pending'];
 
 const EMPTY_FORM = {
   zone: 'Zone 1', instrumentName: '', instrumentCount: '', batchNumber: '',
-  sterilizationMethod: 'Autoclave', temperature: '', pressure: '', duration: '',
-  cycleNumber: '', sterilizedDate: '', expiryDate: '', sterilizedBy: '',
-  checkedBy: '', status: 'Pending', notes: '',
+  sterilizationMethod: 'Steam / Autoclave', temperature: '', pressure: '', duration: '', aerationTime: '',
+  cycleNumber: '', loadNumber: '', programNumber: '', sterilizedDate: '', expiryDate: '', sterilizedBy: '',
+  checkedBy: '', status: 'Dirty', notes: '',
 };
 
 function buildQrText(s) {
-  return [
-    'PESU HOSPITALS — STERILIZATION RECORD',
-    `Set ID    : ${s.setId}`,
-    `Zone      : ${s.zone}`,
-    `Instrument: ${s.instrumentName} (${s.instrumentCount} pcs)`,
-    `Batch     : ${s.batchNumber}`,
-    `Method    : ${s.sterilizationMethod}  Cycle: ${s.cycleNumber || 'N/A'}`,
-    `Temp/Press: ${s.temperature || 'N/A'} / ${s.pressure || 'N/A'}  ${s.duration || 'N/A'} min`,
-    `Sterilized: ${s.sterilizedDate ? format(new Date(s.sterilizedDate), 'dd/MM/yyyy HH:mm') : 'N/A'}`,
-    `Expiry    : ${s.expiryDate ? format(new Date(s.expiryDate), 'dd/MM/yyyy') : 'N/A'}`,
-    `By        : ${s.sterilizedBy}`,
-    `Verified  : ${s.checkedBy}`,
-    `Status    : ${s.status.toUpperCase()}`,
-    s.notes ? `Notes     : ${s.notes}` : '',
-  ].filter(Boolean).join('\n');
+  // Return a dynamic URL pointing to the set details page
+  return `${window.location.origin}/sterilization/set/${s._id}`;
 }
 
 // ─── QR Modal ────────────────────────────────────────────────────────────────
@@ -131,6 +125,21 @@ function SetModal({ initialData, defaultZone, onClose, onSaved }) {
 
   const setField = (field, val) => setForm(p => ({ ...p, [field]: val }));
 
+  // Auto-fill method defaults when creating
+  const handleMethodChange = (e) => {
+    const m = e.target.value;
+    setField('sterilizationMethod', m);
+    if (!isEdit) {
+      if (m === 'Steam / Autoclave') {
+        setForm(p => ({ ...p, temperature: '134', pressure: '2.1', duration: '20', aerationTime: '' }));
+      } else if (m === 'ETO') {
+        setForm(p => ({ ...p, temperature: '37', pressure: '', duration: '480', aerationTime: '240' }));
+      } else {
+        setForm(p => ({ ...p, temperature: '', pressure: '', duration: '', aerationTime: '' }));
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); setError('');
@@ -168,7 +177,7 @@ function SetModal({ initialData, defaultZone, onClose, onSaved }) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Zone</label>
-                <select required className={inputCls} value={form.zone} onChange={e => setField('zone', e.target.value)}>
+                <select disabled className={inputCls + ' bg-gray-50 text-gray-500 cursor-not-allowed'} value={form.zone} onChange={e => setField('zone', e.target.value)}>
                   {ZONES.map(z => <option key={z}>{z}</option>)}
                 </select>
               </div>
@@ -195,7 +204,7 @@ function SetModal({ initialData, defaultZone, onClose, onSaved }) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Sterilization Method</label>
-                <select required className={inputCls} value={form.sterilizationMethod} onChange={e => setField('sterilizationMethod', e.target.value)}>
+                <select required className={inputCls} value={form.sterilizationMethod} onChange={handleMethodChange}>
                   {METHODS.map(m => <option key={m}>{m}</option>)}
                 </select>
               </div>
@@ -217,7 +226,7 @@ function SetModal({ initialData, defaultZone, onClose, onSaved }) {
               </div>
               <div>
                 <label className={labelCls}>Status</label>
-                <select required className={inputCls} value={form.status} onChange={e => setField('status', e.target.value)}>
+                <select disabled className={inputCls + ' bg-gray-50 text-gray-500 cursor-not-allowed'} value={form.status} onChange={e => setField('status', e.target.value)}>
                   {STATUSES.map(s => <option key={s}>{s}</option>)}
                 </select>
               </div>
@@ -270,20 +279,75 @@ function SetModal({ initialData, defaultZone, onClose, onSaved }) {
 }
 
 // ─── Set Card ────────────────────────────────────────────────────────────────
-function SetCard({ set, onEdit, onQR, onDelete }) {
+function SetCard({ set, onEdit, onQR, onDelete, onMove }) {
   const isExpired = set.expiryDate && new Date(set.expiryDate) < new Date();
+  
+  // Workflow Actions Logic
+  const getActions = () => {
+    if (set.zone === 'Zone 1') {
+      return (
+        <button onClick={() => onMove(set, 'Sent to Zone 2', 'Zone 2', 'Packed')} className="flex-1 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition-colors">
+          Send to Zone 2 (Pack)
+        </button>
+      );
+    }
+    if (set.zone === 'Zone 2') {
+      return (
+        <>
+          {set.status !== 'Sterilizing' && set.status !== 'Sterile' && (
+            <button onClick={() => onMove(set, 'Started Sterilization', 'Zone 2', 'Sterilizing')} className="flex-1 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold transition-colors">
+              Start Sterilization
+            </button>
+          )}
+          {set.status === 'Sterilizing' && (
+             <button onClick={() => onMove(set, 'Marked as Sterile', 'Zone 2', 'Sterile')} className="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition-colors">
+               Mark Sterile
+             </button>
+          )}
+          {set.status === 'Sterile' && (
+             <button onClick={() => onMove(set, 'Sent to Zone 3', 'Zone 3', 'Stored')} className="flex-1 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
+               Send to Storage
+             </button>
+          )}
+        </>
+      );
+    }
+    if (set.zone === 'Zone 3') {
+      return (
+        <>
+          {set.status === 'Stored' && (
+             <button onClick={() => onMove(set, 'Issued to OT', 'Zone 3', 'Issued')} className="flex-1 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold transition-colors">
+               Issue to OT
+             </button>
+          )}
+          {set.status === 'Issued' && (
+             <button onClick={() => onMove(set, 'Returned from OT', 'Zone 3', 'Returned')} className="flex-1 py-2 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-bold transition-colors">
+               Return Set
+             </button>
+          )}
+          {(set.status === 'Returned' || set.status === 'Failed' || isExpired) && (
+             <button onClick={() => onMove(set, 'Sent back for Re-sterilization', 'Zone 1', 'Dirty')} className="flex-1 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold transition-colors">
+               Re-Sterilize
+             </button>
+          )}
+        </>
+      );
+    }
+    return null;
+  };
+
   return (
-    <div className={`bg-white rounded-2xl border ${isExpired ? 'border-red-200' : 'border-gray-100'} shadow-sm hover:shadow-md transition-all p-4 space-y-3`}>
+    <div className={`bg-white rounded-2xl border ${isExpired ? 'border-red-200' : 'border-gray-100'} shadow-sm hover:shadow-md transition-all p-4 space-y-3 flex flex-col`}>
       <div className="flex items-start justify-between">
         <div>
           <span className="text-xs font-black text-gray-400 tracking-widest uppercase">{set.zone}</span>
           <h4 className="text-lg font-black text-gray-900 leading-tight">{set.setId}</h4>
           <p className="text-sm font-semibold text-gray-600">{set.instrumentName}</p>
         </div>
-        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${STATUS_COLORS[set.status]}`}>{set.status}</span>
+        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${STATUS_COLORS[set.status] || STATUS_COLORS['Pending']}`}>{set.status}</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-500">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-500 flex-1">
         <span><b className="text-gray-700">Method:</b> {set.sterilizationMethod}</span>
         <span><b className="text-gray-700">Count:</b> {set.instrumentCount} pcs</span>
         <span><b className="text-gray-700">Batch:</b> {set.batchNumber}</span>
@@ -296,14 +360,17 @@ function SetCard({ set, onEdit, onQR, onDelete }) {
 
       {isExpired && <p className="text-xs font-bold text-red-500">⚠ Expired — Re-sterilize required</p>}
 
+      <div className="flex gap-2 pt-2 border-t border-gray-50">
+        {getActions()}
+      </div>
       <div className="flex gap-2 pt-1">
-        <button onClick={() => onQR(set)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
-          <QrCode className="w-3.5 h-3.5" /> View QR
+        <button onClick={() => onQR(set)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold transition-colors">
+          <QrCode className="w-3.5 h-3.5" /> QR
         </button>
         <button onClick={() => onEdit(set)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold transition-colors">
           <Edit2 className="w-3.5 h-3.5" /> Edit
         </button>
-        <button onClick={() => onDelete(set)} className="py-2 px-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition-colors">
+        <button onClick={() => onDelete(set)} className="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition-colors">
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -318,6 +385,8 @@ export default function Sterilization() {
   const [showForm, setShowForm] = useState(false);
   const [editSet, setEditSet] = useState(null);
   const [qrSet, setQrSet] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
 
   const fetchSets = async () => {
     try {
@@ -336,12 +405,35 @@ export default function Sterilization() {
     } catch (err) { alert('Delete failed'); }
   };
 
+  const handleMove = async (set, action, targetZone, targetStatus) => {
+    try {
+      await axios.post(`http://localhost:5000/api/sterilization-sets/${set._id}/move`, {
+        action,
+        zone: targetZone,
+        status: targetStatus
+      });
+      fetchSets();
+    } catch (err) {
+      alert('Failed to move set');
+    }
+  };
+
   const handleSaved = () => { setShowForm(false); setEditSet(null); fetchSets(); };
 
-  const zoneSets = sets.filter(s => s.zone === activeZone);
+  // Filter sets based on search query and status filter
+  const filteredSets = sets.filter(s => {
+    const matchesSearch = s.setId.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          s.instrumentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          s.batchNumber.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === 'All' || s.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  const zoneSets = filteredSets.filter(s => s.zone === activeZone);
   const summary = {
     total: sets.length,
-    sterilized: sets.filter(s => s.status === 'Sterilized').length,
+    active: sets.filter(s => ['Cleaning', 'Packed', 'Sterilizing'].includes(s.status)).length,
+    sterilized: sets.filter(s => s.status === 'Sterile' || s.status === 'Stored').length,
     expired: sets.filter(s => s.status === 'Expired' || (s.expiryDate && new Date(s.expiryDate) < new Date())).length,
   };
 
@@ -364,10 +456,11 @@ export default function Sterilization() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {[
           { label: 'Total Sets', value: summary.total, color: 'text-gray-900', bg: 'bg-white' },
-          { label: 'Sterilized', value: summary.sterilized, color: 'text-emerald-700', bg: 'bg-emerald-50' },
+          { label: 'Active Processing', value: summary.active, color: 'text-blue-700', bg: 'bg-blue-50' },
+          { label: 'Sterile / Stored', value: summary.sterilized, color: 'text-emerald-700', bg: 'bg-emerald-50' },
           { label: 'Expired', value: summary.expired, color: 'text-red-700', bg: 'bg-red-50' },
         ].map(c => (
           <div key={c.label} className={`${c.bg} rounded-2xl border border-gray-100 p-5 text-center shadow-sm`}>
@@ -375,6 +468,25 @@ export default function Sterilization() {
             <p className="text-sm text-gray-500 font-medium mt-1">{c.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* Search and Filters */}
+      <div className="flex gap-4">
+        <input 
+          type="text" 
+          placeholder="Search by Set ID, Name, or Batch..." 
+          className="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <select 
+          className="border border-gray-200 rounded-xl px-4 py-2 text-sm bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="All">All Statuses</option>
+          {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
       </div>
 
       {/* Zone Tabs */}
@@ -425,6 +537,7 @@ export default function Sterilization() {
                 onEdit={set => { setEditSet(set); setShowForm(true); }}
                 onQR={setQrSet}
                 onDelete={handleDelete}
+                onMove={handleMove}
               />
             ))}
           </div>

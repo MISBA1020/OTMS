@@ -7,6 +7,7 @@ import Sterilization from './pages/Sterilization';
 import AdminPanel from './pages/AdminPanel';
 import Login from './pages/Login';
 import Reports from './pages/Reports';
+import SetDetails from './pages/SetDetails';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/scheduling" element={<Scheduling />} />
               <Route path="/sterilization" element={<Sterilization />} />
+              <Route path="/sterilization/set/:setId" element={<SetDetails />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/admin" element={
                 <ProtectedRoute requireAdmin={true}>
