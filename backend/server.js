@@ -10,6 +10,7 @@ import surgeryRoutes from "./routes/surgeryRoutes.js";
 import sterilizationRoutes from "./routes/sterilizationRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
+import sterilizationSetRoutes from "./routes/sterilizationSetRoutes.js";
 import { syncSurgeryStatuses } from "./services/surgeryStatusSync.js";
 
 const app = express();
@@ -29,6 +30,7 @@ app.use("/api/ots", otRoutes);
 app.use("/api/surgeries", surgeryRoutes);
 app.use("/api/sterilization", sterilizationRoutes);
 app.use("/api/staff", staffRoutes);
+app.use("/api/sterilization-sets", sterilizationSetRoutes);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "OTMS API is running" });
