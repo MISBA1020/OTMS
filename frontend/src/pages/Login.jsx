@@ -62,13 +62,16 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-6">
             <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Access Role</label>
-                <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full pl-4 pr-10 py-4 bg-white/80 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all font-bold text-gray-800 shadow-sm cursor-pointer"
+                <select 
+                  className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none appearance-none font-medium"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
                 >
-                <option value="User">Doctor / Medical Personnel</option>
-                <option value="Admin">System Administrator</option>
+                  <option value="User">Standard User</option>
+                  <option value="Technician">CSSD Technician</option>
+                  <option value="Supervisor">CSSD Supervisor</option>
+                  <option value="CSSD Manager">CSSD Manager</option>
+                  <option value="Admin">System Administrator</option>
                 </select>
             </div>
 

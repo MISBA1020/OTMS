@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Activity, Beaker, CheckCircle, AlertCircle, Search, PlusCircle, User, X, Eye } from "lucide-react";
+import { Activity, Beaker, CheckCircle, AlertCircle, Search, PlusCircle, User, X, Eye, Package, ShieldAlert, Zap, Truck } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import ScheduleModal from "../components/ScheduleModal";
@@ -16,6 +16,8 @@ export default function Dashboard() {
   const { user } = useContext(AuthContext);
   const [ots, setOts] = useState([]);
   const [activeSurgeries, setActiveSurgeries] = useState([]);
+  const [cssdSets, setCssdSets] = useState([]);
+  const [cssdCompleted, setCssdCompleted] = useState([]);
   const [selectedActiveSurgery, setSelectedActiveSurgery] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,9 +31,11 @@ export default function Dashboard() {
 
   const fetchOTs = async () => {
     try {
-      const [otsRes, surgeriesRes] = await Promise.all([
+      const [otsRes, surgeriesRes, cssdRes, cssdCompletedRes] = await Promise.all([
         axios.get("http://localhost:5000/api/ots"),
         axios.get("http://localhost:5000/api/surgeries"),
+        axios.get("http://localhost:5000/api/sterilization-sets"),
+        axios.get("http://localhost:5000/api/sterilization-sets?completedOnly=true"),
       ]);
 
       const now = new Date();
@@ -58,6 +62,8 @@ export default function Dashboard() {
 
       setOts(updatedOts);
       setActiveSurgeries(allSurgeries);
+      setCssdSets(cssdRes.data);
+      setCssdCompleted(cssdCompletedRes.data);
     } catch (err) {
       console.error("Failed to fetch OTs", err);
     } finally {
@@ -95,6 +101,39 @@ export default function Dashboard() {
       value: ots.filter((ot) => ot.status === "Maintenance").length,
       icon: AlertCircle,
       color: "text-rose-500",
+    },
+  ];
+
+  const cssdStats = [
+    {
+      name: "Sterilizing",
+      value: cssdSets.filter((s) => s.status === "Sterilizing").length,
+      icon: Zap,
+      color: "text-amber-500",
+    },
+    {
+      name: "Ready (Stored)",
+      value: cssdSets.filter((s) => s.status === "Stored").length,
+      icon: Package,
+      color: "text-emerald-500",
+    },
+    {
+      name: "Issued to OT",
+      value: cssdSets.filter((s) => s.status === "Issued").length,
+      icon: Truck,
+      color: "text-purple-500",
+    },
+    {
+      name: "Expired / Failed",
+      value: cssdSets.filter((s) => s.status === "Expired" || s.status === "Failed").length,
+      icon: ShieldAlert,
+      color: "text-red-500",
+    },
+    {
+      name: "Completed Cycles",
+      value: cssdCompleted.length,
+      icon: CheckCircle,
+      color: "text-green-500",
     },
   ];
 
@@ -162,6 +201,41 @@ export default function Dashboard() {
         })}
       </div>
 
+      <h2 className="text-2xl font-bold tracking-tight text-slate-800 dark:text-white transition-colors mt-8">
+        CSSD Operations
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        {cssdStats.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              key={stat.name}
+              className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 shadow-sm rounded-xl p-6 flex items-center justify-between hover:-translate-y-1 transition-all cursor-default"
+            >
+              <div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {stat.name}
+                </p>
+                <p className="text-3xl font-bold text-slate-800 dark:text-white mt-2">
+                  {stat.value}
+                </p>
+              </div>
+              <div
+                className={`p-4 rounded-xl bg-gray-50 dark:bg-slate-800/50 ${stat.color}`}
+              >
+                <Icon className="w-8 h-8" />
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <h2 className="text-2xl font-bold tracking-tight text-slate-800 dark:text-white transition-colors mt-8 mb-4">
+        Live OT Status
+      </h2>
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {loading ? (
           <div className="col-span-full py-20 flex justify-center text-gray-400">

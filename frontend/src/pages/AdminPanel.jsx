@@ -92,10 +92,14 @@ export default function AdminPanel() {
                             </div>
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5 transition-colors">System Role</label>
-                                <select required className="w-full bg-white/50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white rounded-2xl p-3.5 focus:ring-2 focus:ring-primary-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none cursor-pointer"
+                                <select 
+                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-all outline-none appearance-none text-gray-900 dark:text-white"
                                     onChange={e => setFormData({ ...formData, role: e.target.value })} value={formData.role}>
-                                    <option className="dark:bg-slate-800" value="User">Doctor / Personnel</option>
-                                    <option className="dark:bg-slate-800" value="Admin">System Administrator</option>
+                                    <option value="User">Standard User</option>
+                                    <option value="Technician">CSSD Technician</option>
+                                    <option value="Supervisor">CSSD Supervisor</option>
+                                    <option value="CSSD Manager">CSSD Manager</option>
+                                    <option value="Admin">System Admin</option>
                                 </select>
                             </div>
                             <button type="submit" className="w-full bg-gradient-to-r from-primary-600 to-indigo-600 hover:to-indigo-700 text-white py-4 mt-6 rounded-2xl font-bold text-lg shadow-xl shadow-primary-500/30 hover:-translate-y-0.5 transition-all">

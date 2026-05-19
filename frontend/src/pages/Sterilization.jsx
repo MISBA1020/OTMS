@@ -1,10 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import axios from 'axios';
 import QRCode from 'react-qr-code';
 import { format } from 'date-fns';
-import { Plus, Edit2, QrCode, Trash2, X, Printer, ShieldCheck, Package, FlaskConical } from 'lucide-react';
+import { 
+  ArrowLeft, Printer, ShieldCheck, Activity, Package, 
+  Settings, Clock, UserCheck, TestTube, History, CheckCircle2,
+  Plus, Edit2, QrCode, Trash2, X, FlaskConical
+} from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
 const ZONES = ['Zone 1', 'Zone 2', 'Zone 3'];
+const ZONE_LABELS = {
+  'Zone 1': 'Zone 1 - Decontamination Zone (Dirty Area)',
+  'Zone 2': 'Zone 2 - Semi-Sterile Room',
+  'Zone 3': 'Zone 3 - Sterile Storage Area'
+};
 const ZONE_COLORS = {
   'Zone 1': { bg: 'bg-blue-50', border: 'border-blue-200', badge: 'bg-blue-100 text-blue-800', btn: 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30' },
   'Zone 2': { bg: 'bg-purple-50', border: 'border-purple-200', badge: 'bg-purple-100 text-purple-800', btn: 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/30' },
@@ -21,21 +31,32 @@ const STATUS_COLORS = {
   'Returned': 'bg-orange-100 text-orange-700',
   'Expired': 'bg-red-100 text-red-700',
   'Failed': 'bg-red-100 text-red-900',
-  'Pending': 'bg-gray-100 text-gray-500'
+  'Pending': 'bg-gray-100 text-gray-500',
+  'Completed': 'bg-green-100 text-green-800'
 };
 const METHODS = ['Steam / Autoclave', 'ETO', 'Plasma', 'Chemical'];
-const STATUSES = ['Dirty', 'Cleaning', 'Packed', 'Sterilizing', 'Sterile', 'Stored', 'Issued', 'Returned', 'Expired', 'Failed', 'Pending'];
+const STATUSES = ['Dirty', 'Cleaning', 'Packed', 'Sterilizing', 'Sterile', 'Stored', 'Issued', 'Returned', 'Expired', 'Failed', 'Pending', 'Completed'];
 
 const EMPTY_FORM = {
-  zone: 'Zone 1', instrumentName: '', instrumentCount: '', batchNumber: '',
+  zone: '', instrumentName: '', instrumentCount: '', batchNumber: '',
   sterilizationMethod: 'Steam / Autoclave', temperature: '', pressure: '', duration: '', aerationTime: '',
   cycleNumber: '', loadNumber: '', programNumber: '', sterilizedDate: '', expiryDate: '', sterilizedBy: '',
   checkedBy: '', status: 'Dirty', notes: '',
 };
 
 function buildQrText(s) {
-  // Return a dynamic URL pointing to the set details page
-  return `${window.location.origin}/sterilization/set/${s._id}`;
+  return `Set ID: ${s.setId}
+Instrument: ${s.instrumentName}
+Zone: ${ZONE_LABELS[s.zone] || s.zone}
+Status: ${s.status}
+Method: ${s.sterilizationMethod}
+Count: ${s.instrumentCount} pcs
+Batch: ${s.batchNumber}
+Cycle: ${s.cycleNumber || 'N/A'}
+Sterilized: ${s.sterilizedDate ? format(new Date(s.sterilizedDate), 'dd/MM/yyyy HH:mm') : 'N/A'}
+Expiry: ${s.expiryDate ? format(new Date(s.expiryDate), 'dd/MM/yyyy') : 'N/A'}
+By: ${s.sterilizedBy}
+Verified: ${s.checkedBy}`;
 }
 
 // ─── QR Modal ────────────────────────────────────────────────────────────────
@@ -74,7 +95,7 @@ function QRModal({ set, onClose }) {
               </div>
               <div className="flex flex-col items-end gap-1">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${STATUS_COLORS[set.status]}`}>{set.status}</span>
-                <span className="text-xs text-gray-500">{set.zone}</span>
+                <span className="text-xs text-gray-500">{ZONE_LABELS[set.zone] || set.zone}</span>
               </div>
             </div>
 
@@ -111,14 +132,14 @@ function QRModal({ set, onClose }) {
 }
 
 // ─── Set Form Modal ───────────────────────────────────────────────────────────
-function SetModal({ initialData, defaultZone, onClose, onSaved }) {
+function SetModal({ initialData, onClose, onSaved }) {
   const isEdit = !!initialData;
   const [form, setForm] = useState(
     isEdit ? {
       ...initialData,
       sterilizedDate: initialData.sterilizedDate ? format(new Date(initialData.sterilizedDate), "yyyy-MM-dd'T'HH:mm") : '',
       expiryDate: initialData.expiryDate ? format(new Date(initialData.expiryDate), 'yyyy-MM-dd') : '',
-    } : { ...EMPTY_FORM, zone: defaultZone }
+    } : { ...EMPTY_FORM }
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -151,7 +172,15 @@ function SetModal({ initialData, defaultZone, onClose, onSaved }) {
       }
       onSaved();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save.');
+      const data = err.response?.data;
+      if (data?.errors) {
+        // Show each field validation error
+        const msgs = Object.entries(data.errors).map(([k, v]) => `${k}: ${v}`).join('\n');
+        setError(msgs);
+      } else {
+        setError(data?.message || 'Failed to save.');
+      }
+      console.error('Save error:', data);
     } finally {
       setLoading(false);
     }
@@ -177,8 +206,9 @@ function SetModal({ initialData, defaultZone, onClose, onSaved }) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Zone</label>
-                <select disabled className={inputCls + ' bg-gray-50 text-gray-500 cursor-not-allowed'} value={form.zone} onChange={e => setField('zone', e.target.value)}>
-                  {ZONES.map(z => <option key={z}>{z}</option>)}
+                <select required className={inputCls} value={form.zone} onChange={e => setField('zone', e.target.value)}>
+                  <option value="" disabled>Select Zone</option>
+                  {ZONES.map(z => <option key={z} value={z}>{ZONE_LABELS[z]}</option>)}
                 </select>
               </div>
               <div>
@@ -226,8 +256,8 @@ function SetModal({ initialData, defaultZone, onClose, onSaved }) {
               </div>
               <div>
                 <label className={labelCls}>Status</label>
-                <select disabled className={inputCls + ' bg-gray-50 text-gray-500 cursor-not-allowed'} value={form.status} onChange={e => setField('status', e.target.value)}>
-                  {STATUSES.map(s => <option key={s}>{s}</option>)}
+                <select required className={inputCls} value={form.status} onChange={e => setField('status', e.target.value)}>
+                  {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
             </div>
@@ -279,15 +309,15 @@ function SetModal({ initialData, defaultZone, onClose, onSaved }) {
 }
 
 // ─── Set Card ────────────────────────────────────────────────────────────────
-function SetCard({ set, onEdit, onQR, onDelete, onMove }) {
+function SetCard({ set, onEdit, onQR, onDelete, onMove, userRole }) {
   const isExpired = set.expiryDate && new Date(set.expiryDate) < new Date();
   
   // Workflow Actions Logic
   const getActions = () => {
     if (set.zone === 'Zone 1') {
       return (
-        <button onClick={() => onMove(set, 'Sent to Zone 2', 'Zone 2', 'Packed')} className="flex-1 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition-colors">
-          Send to Zone 2 (Pack)
+        <button onClick={() => onMove(set, 'Sent to Semi-Sterile Room', 'Zone 2', 'Packed')} className="flex-1 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition-colors">
+          Send to Semi-Sterile Room
         </button>
       );
     }
@@ -300,13 +330,18 @@ function SetCard({ set, onEdit, onQR, onDelete, onMove }) {
             </button>
           )}
           {set.status === 'Sterilizing' && (
-             <button onClick={() => onMove(set, 'Marked as Sterile', 'Zone 2', 'Sterile')} className="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition-colors">
+             <button 
+                onClick={() => onMove(set, 'Marked as Sterile', 'Zone 2', 'Sterile')} 
+                disabled={userRole !== 'Supervisor' && userRole !== 'CSSD Manager' && userRole !== 'Admin'}
+                className="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={userRole !== 'Supervisor' && userRole !== 'CSSD Manager' && userRole !== 'Admin' ? 'Requires Supervisor verification' : ''}
+              >
                Mark Sterile
              </button>
           )}
           {set.status === 'Sterile' && (
-             <button onClick={() => onMove(set, 'Sent to Zone 3', 'Zone 3', 'Stored')} className="flex-1 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
-               Send to Storage
+             <button onClick={() => onMove(set, 'Moved to Sterile Storage', 'Zone 3', 'Stored')} className="flex-1 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-colors">
+               Move to Sterile Storage
              </button>
           )}
         </>
@@ -316,16 +351,17 @@ function SetCard({ set, onEdit, onQR, onDelete, onMove }) {
       return (
         <>
           {set.status === 'Stored' && (
-             <button onClick={() => onMove(set, 'Issued to OT', 'Zone 3', 'Issued')} className="flex-1 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold transition-colors">
+             <button onClick={() => window.dispatchEvent(new CustomEvent('openIssueModal', { detail: set }))} className="flex-1 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold transition-colors">
                Issue to OT
              </button>
           )}
           {set.status === 'Issued' && (
-             <button onClick={() => onMove(set, 'Returned from OT', 'Zone 3', 'Returned')} className="flex-1 py-2 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-bold transition-colors">
-               Return Set
+             <button onClick={() => onMove(set, 'Set used in OT – workflow completed', 'Zone 3', 'Completed')} className="flex-1 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 text-xs font-bold transition-colors">
+               ✓ Mark as Used in OT
              </button>
           )}
-          {(set.status === 'Returned' || set.status === 'Failed' || isExpired) && (
+          {/* Re-sterilize only for expired or truly failed sets, NOT after OT use */}
+          {(set.status === 'Failed' || (set.status !== 'Completed' && set.status !== 'Issued' && isExpired)) && (
              <button onClick={() => onMove(set, 'Sent back for Re-sterilization', 'Zone 1', 'Dirty')} className="flex-1 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold transition-colors">
                Re-Sterilize
              </button>
@@ -340,7 +376,7 @@ function SetCard({ set, onEdit, onQR, onDelete, onMove }) {
     <div className={`bg-white rounded-2xl border ${isExpired ? 'border-red-200' : 'border-gray-100'} shadow-sm hover:shadow-md transition-all p-4 space-y-3 flex flex-col`}>
       <div className="flex items-start justify-between">
         <div>
-          <span className="text-xs font-black text-gray-400 tracking-widest uppercase">{set.zone}</span>
+          <span className="text-xs font-black text-gray-400 tracking-widest uppercase">{ZONE_LABELS[set.zone] || set.zone}</span>
           <h4 className="text-lg font-black text-gray-900 leading-tight">{set.setId}</h4>
           <p className="text-sm font-semibold text-gray-600">{set.instrumentName}</p>
         </div>
@@ -370,9 +406,11 @@ function SetCard({ set, onEdit, onQR, onDelete, onMove }) {
         <button onClick={() => onEdit(set)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold transition-colors">
           <Edit2 className="w-3.5 h-3.5" /> Edit
         </button>
-        <button onClick={() => onDelete(set)} className="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition-colors">
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
+        {(userRole === 'Admin' || userRole === 'CSSD Manager') && (
+          <button onClick={() => onDelete(set)} className="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition-colors">
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -380,6 +418,7 @@ function SetCard({ set, onEdit, onQR, onDelete, onMove }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Sterilization() {
+  const { user } = useContext(AuthContext);
   const [sets, setSets] = useState([]);
   const [activeZone, setActiveZone] = useState('Zone 1');
   const [showForm, setShowForm] = useState(false);
@@ -387,15 +426,37 @@ export default function Sterilization() {
   const [qrSet, setQrSet] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
+  const [ots, setOts] = useState([]);
+  const [issueModalSet, setIssueModalSet] = useState(null);
+  const [completedSets, setCompletedSets] = useState([]);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const fetchSets = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/sterilization-sets');
-      setSets(res.data);
+      const [activeRes, completedRes] = await Promise.all([
+        axios.get('http://localhost:5000/api/sterilization-sets'),
+        axios.get('http://localhost:5000/api/sterilization-sets?completedOnly=true'),
+      ]);
+      setSets(activeRes.data);
+      setCompletedSets(completedRes.data);
     } catch (err) { console.error(err); }
   };
 
-  useEffect(() => { fetchSets(); }, []);
+  const fetchOts = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/ots');
+      setOts(res.data);
+    } catch (err) { console.error(err); }
+  };
+
+  useEffect(() => { 
+    fetchSets(); 
+    fetchOts();
+    
+    const handleOpenIssue = (e) => setIssueModalSet(e.detail);
+    window.addEventListener('openIssueModal', handleOpenIssue);
+    return () => window.removeEventListener('openIssueModal', handleOpenIssue);
+  }, []);
 
   const handleDelete = async (set) => {
     if (!window.confirm(`Delete set ${set.setId}? This cannot be undone.`)) return;
@@ -405,16 +466,18 @@ export default function Sterilization() {
     } catch (err) { alert('Delete failed'); }
   };
 
-  const handleMove = async (set, action, targetZone, targetStatus) => {
+  const handleMove = async (set, action, targetZone, targetStatus, issuedToOT = null) => {
     try {
       await axios.post(`http://localhost:5000/api/sterilization-sets/${set._id}/move`, {
         action,
         zone: targetZone,
-        status: targetStatus
+        status: targetStatus,
+        issuedToOT
       });
       fetchSets();
     } catch (err) {
-      alert('Failed to move set');
+      console.error('Move error:', err.response?.data || err);
+      alert(err.response?.data?.message || 'Failed to move set');
     }
   };
 
@@ -435,6 +498,7 @@ export default function Sterilization() {
     active: sets.filter(s => ['Cleaning', 'Packed', 'Sterilizing'].includes(s.status)).length,
     sterilized: sets.filter(s => s.status === 'Sterile' || s.status === 'Stored').length,
     expired: sets.filter(s => s.status === 'Expired' || (s.expiryDate && new Date(s.expiryDate) < new Date())).length,
+    completed: completedSets.length,
   };
 
   return (
@@ -456,12 +520,13 @@ export default function Sterilization() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-5 gap-4">
         {[
-          { label: 'Total Sets', value: summary.total, color: 'text-gray-900', bg: 'bg-white' },
+          { label: 'Total Active Sets', value: summary.total, color: 'text-gray-900', bg: 'bg-white' },
           { label: 'Active Processing', value: summary.active, color: 'text-blue-700', bg: 'bg-blue-50' },
           { label: 'Sterile / Stored', value: summary.sterilized, color: 'text-emerald-700', bg: 'bg-emerald-50' },
-          { label: 'Expired', value: summary.expired, color: 'text-red-700', bg: 'bg-red-50' },
+          { label: 'Expired / Failed', value: summary.expired, color: 'text-red-700', bg: 'bg-red-50' },
+          { label: 'Completed Cycles', value: summary.completed, color: 'text-green-700', bg: 'bg-green-50' },
         ].map(c => (
           <div key={c.label} className={`${c.bg} rounded-2xl border border-gray-100 p-5 text-center shadow-sm`}>
             <p className={`text-3xl font-black ${c.color}`}>{c.value}</p>
@@ -489,7 +554,7 @@ export default function Sterilization() {
         </select>
       </div>
 
-      {/* Zone Tabs */}
+      {/* Zone + Completed Tabs */}
       <div className="flex gap-2 border-b border-gray-100">
         {ZONES.map(z => {
           const col = ZONE_COLORS[z];
@@ -497,36 +562,42 @@ export default function Sterilization() {
           return (
             <button
               key={z}
-              onClick={() => setActiveZone(z)}
+              onClick={() => { setShowCompleted(false); setActiveZone(z); }}
               className={`px-6 py-3 font-bold text-sm rounded-t-xl transition-all border-b-2 ${
-                activeZone === z
+                !showCompleted && activeZone === z
                   ? `${col.badge} border-current`
                   : 'text-gray-400 border-transparent hover:text-gray-700'
               }`}
             >
-              {z} <span className="ml-1.5 text-xs opacity-70">({count})</span>
+              {ZONE_LABELS[z]} <span className="ml-1.5 text-xs opacity-70">({count})</span>
             </button>
           );
         })}
+        {/* Completed tab */}
+        <button
+          onClick={() => setShowCompleted(true)}
+          className={`px-6 py-3 font-bold text-sm rounded-t-xl transition-all border-b-2 ml-auto ${
+            showCompleted
+              ? 'bg-green-100 text-green-800 border-green-400'
+              : 'text-gray-400 border-transparent hover:text-gray-700'
+          }`}
+        >
+          ✓ Completed Cycles <span className="ml-1.5 text-xs opacity-70">({completedSets.length})</span>
+        </button>
       </div>
 
       {/* Zone Panel */}
+      {!showCompleted && (
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-800">{activeZone} — {zoneSets.length} Set{zoneSets.length !== 1 ? 's' : ''}</h2>
-          <button
-            onClick={() => { setEditSet(null); setShowForm(true); }}
-            className={`flex items-center gap-2 text-white text-sm px-4 py-2 rounded-xl font-bold shadow-lg transition-all ${ZONE_COLORS[activeZone].btn}`}
-          >
-            <Plus className="w-4 h-4" /> Add to {activeZone}
-          </button>
+          <h2 className="text-lg font-bold text-gray-800">{ZONE_LABELS[activeZone]} — {zoneSets.length} Set{zoneSets.length !== 1 ? 's' : ''}</h2>
         </div>
 
         {zoneSets.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <Package className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="font-semibold">No sets in {activeZone} yet.</p>
-            <p className="text-sm mt-1">Click "Add to {activeZone}" to register the first set.</p>
+            <p className="font-semibold">No sets in {ZONE_LABELS[activeZone]} yet.</p>
+            <p className="text-sm mt-1">Click "Register New Set" to register the first set.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -538,22 +609,99 @@ export default function Sterilization() {
                 onQR={setQrSet}
                 onDelete={handleDelete}
                 onMove={handleMove}
+                userRole={user?.role}
               />
             ))}
           </div>
         )}
       </div>
+      )}
+
+      {/* Completed Cycles Panel */}
+      {showCompleted && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-800">✅ Completed Sterilization Cycles — {completedSets.length} set{completedSets.length !== 1 ? 's' : ''}</h2>
+          </div>
+          {completedSets.length === 0 ? (
+            <div className="text-center py-16 text-gray-400">
+              <CheckCircle2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p className="font-semibold">No completed cycles yet.</p>
+              <p className="text-sm mt-1">Sets marked as "Used in OT" will appear here.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {completedSets.map(s => (
+                <div key={s._id} className="bg-white rounded-2xl border border-green-100 shadow-sm p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <span className="text-xs font-black text-gray-400 tracking-widest uppercase">{ZONE_LABELS[s.zone] || s.zone}</span>
+                      <h4 className="text-lg font-black text-gray-900 leading-tight">{s.setId}</h4>
+                      <p className="text-sm font-semibold text-gray-600">{s.instrumentName}</p>
+                    </div>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-green-100 text-green-800">✅ Completed</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-500">
+                    <span><b className="text-gray-700">Method:</b> {s.sterilizationMethod}</span>
+                    <span><b className="text-gray-700">Count:</b> {s.instrumentCount} pcs</span>
+                    <span><b className="text-gray-700">Batch:</b> {s.batchNumber}</span>
+                    <span><b className="text-gray-700">By:</b> {s.sterilizedBy}</span>
+                    <span><b className="text-gray-700">Sterilized:</b> {s.sterilizedDate ? format(new Date(s.sterilizedDate), 'dd MMM yy') : '—'}</span>
+                    <span><b className="text-gray-700">Completed:</b> {format(new Date(s.updatedAt), 'dd MMM yy')}</span>
+                  </div>
+                  <div className="pt-2 border-t border-gray-50 text-xs text-green-700 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Sterilization cycle complete — used in OT
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setQrSet(s)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold transition-colors">
+                      <QrCode className="w-3.5 h-3.5" /> QR
+                    </button>
+                    {(user?.role === 'Admin' || user?.role === 'CSSD Manager') && (
+                      <button onClick={() => handleDelete(s)} className="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition-colors">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Modals */}
       {showForm && (
         <SetModal
           initialData={editSet}
-          defaultZone={activeZone}
           onClose={() => { setShowForm(false); setEditSet(null); }}
           onSaved={handleSaved}
         />
       )}
       {qrSet && <QRModal set={qrSet} onClose={() => setQrSet(null)} />}
+      
+      {/* Issue to OT Modal */}
+      {issueModalSet && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Issue Set to OT</h3>
+            <p className="text-sm text-gray-500 mb-4">Select the Operation Theatre to receive <b>{issueModalSet.setId}</b>.</p>
+            <select 
+              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-6 text-sm"
+              onChange={(e) => {
+                handleMove(issueModalSet, 'Issued to OT', 'Zone 3', 'Issued', e.target.value);
+                setIssueModalSet(null);
+              }}
+              defaultValue=""
+            >
+              <option value="" disabled>Select Operation Theatre...</option>
+              {ots.map(ot => <option key={ot._id} value={ot._id}>{ot.name || `OT ${ot.otNumber}`}</option>)}
+            </select>
+            <button onClick={() => setIssueModalSet(null)} className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -17,7 +17,7 @@ const sterilizationSetSchema = new mongoose.Schema({
     // Process details
     sterilizationMethod: {
         type: String,
-        enum: ['Steam / Autoclave', 'ETO', 'Plasma'],
+        enum: ['Steam / Autoclave', 'ETO', 'Plasma', 'Chemical'],
         required: true,
     },
     temperature: { type: String },
@@ -51,10 +51,11 @@ const sterilizationSetSchema = new mongoose.Schema({
     // Outcome
     status: {
         type: String,
-        enum: ['Dirty', 'Cleaning', 'Packed', 'Sterilizing', 'Sterile', 'Stored', 'Issued', 'Returned', 'Expired', 'Failed'],
+        enum: ['Dirty', 'Cleaning', 'Packed', 'Sterilizing', 'Sterile', 'Stored', 'Issued', 'Returned', 'Expired', 'Failed', 'Completed'],
         default: 'Dirty',
     },
     notes: { type: String, default: '' },
+    issuedToOT: { type: mongoose.Schema.Types.ObjectId, ref: 'OperationTheatre' },
     
     // History & Attachments
     history: [{

@@ -5,7 +5,8 @@ import { format } from 'date-fns';
 import QRCode from 'react-qr-code';
 import { 
   ArrowLeft, Printer, ShieldCheck, Activity, Package, 
-  Settings, Clock, UserCheck, TestTube, History, CheckCircle2 
+  Settings, Clock, UserCheck, TestTube, History, CheckCircle2,
+  Paperclip, UploadCloud, FileText, Download
 } from 'lucide-react';
 
 const STATUS_COLORS = {
@@ -22,6 +23,12 @@ const STATUS_COLORS = {
   'Pending': 'bg-gray-100 text-gray-500'
 };
 
+const ZONE_LABELS = {
+  'Zone 1': 'Zone 1 - Decontamination Zone (Dirty Area)',
+  'Zone 2': 'Zone 2 - Semi-Sterile Room',
+  'Zone 3': 'Zone 3 - Sterile Storage Area'
+};
+
 export default function SetDetails() {
   const { setId } = useParams();
   const navigate = useNavigate();
@@ -30,6 +37,32 @@ export default function SetDetails() {
   const [set, setSet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  const fileInputRef = useRef();
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('user', 'System'); // Placeholder for user
+
+    setUploading(true);
+    try {
+      await axios.post(`http://localhost:5000/api/sterilization-sets/${set._id}/attachments`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const res = await axios.get(`http://localhost:5000/api/sterilization-sets/${set._id}`);
+      setSet(res.data);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to upload attachment');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   useEffect(() => {
     const fetchSet = async () => {
@@ -105,7 +138,7 @@ export default function SetDetails() {
               <Package className="w-4 h-4" /> Basic Information
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4">
-              <div><p className="text-xs text-gray-500 font-bold mb-1">Zone</p><p className="font-semibold">{set.zone}</p></div>
+              <div className="col-span-2 md:col-span-1"><p className="text-xs text-gray-500 font-bold mb-1">Zone</p><p className="font-semibold">{ZONE_LABELS[set.zone] || set.zone}</p></div>
               <div><p className="text-xs text-gray-500 font-bold mb-1">Instrument Count</p><p className="font-semibold">{set.instrumentCount} pieces</p></div>
               <div><p className="text-xs text-gray-500 font-bold mb-1">Batch Number</p><p className="font-semibold">{set.batchNumber}</p></div>
             </div>
@@ -153,6 +186,59 @@ export default function SetDetails() {
                 </div>
               ))}
             </div>
+          </section>
+
+          {/* Attachments Section */}
+          <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                <Paperclip className="w-4 h-4" /> Attachments
+              </h2>
+              <div>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileUpload} 
+                  className="hidden" 
+                  accept=".pdf,image/*" 
+                />
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="flex items-center gap-2 text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <UploadCloud className="w-4 h-4" />
+                  {uploading ? 'Uploading...' : 'Upload File'}
+                </button>
+              </div>
+            </div>
+            
+            {set.attachments && set.attachments.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {set.attachments.map((att, idx) => (
+                  <a 
+                    key={idx} 
+                    href={`http://localhost:5000${att.url}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group"
+                  >
+                    <div className="bg-gray-100 text-gray-500 p-2 rounded-lg group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-gray-900 truncate">{att.filename}</p>
+                      <p className="text-xs text-gray-500">{att.type}</p>
+                    </div>
+                    <Download className="w-4 h-4 text-gray-400 group-hover:text-indigo-600" />
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-4 border-2 border-dashed border-gray-100 rounded-xl">
+                No attachments uploaded yet.
+              </p>
+            )}
           </section>
           
           {/* Dates & Staff */}
@@ -226,7 +312,7 @@ export default function SetDetails() {
           <div className="row"><b>Batch:</b> {set.batchNumber}</div>
           <div className="row"><b>Exp Date:</b> {set.expiryDate ? format(new Date(set.expiryDate), 'dd/MM/yyyy') : 'N/A'}</div>
           <div className="qr-box">
-             <QRCode value={`${window.location.origin}/sterilization/set/${set._id}`} size={120} />
+             <QRCode value={`Set ID: ${set.setId}\nInstrument: ${set.instrumentName}\nZone: ${ZONE_LABELS[set.zone] || set.zone}\nStatus: ${set.status}\nMethod: ${set.sterilizationMethod}\nCount: ${set.instrumentCount} pcs\nBatch: ${set.batchNumber}\nCycle: ${set.cycleNumber || 'N/A'}\nSterilized: ${set.sterilizedDate ? format(new Date(set.sterilizedDate), 'dd/MM/yyyy HH:mm') : 'N/A'}\nExpiry: ${set.expiryDate ? format(new Date(set.expiryDate), 'dd/MM/yyyy') : 'N/A'}\nBy: ${set.sterilizedBy}\nVerified: ${set.checkedBy}`} size={120} />
           </div>
         </div>
       </div>
